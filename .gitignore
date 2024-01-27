@@ -1,0 +1,7 @@
+.pytest_cache
+**/__pycache__
+**/*.db
+python_lv*
+refactoring
+pyqt5
+tests
