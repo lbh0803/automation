@@ -23,6 +23,10 @@ from user_function import make_atp, make_cfg, make_tb
 
 
 class BaseInputWindow(QWidget):
+    """
+    This class is basic interface for other Qwidget classes.
+    """
+
     @abstractmethod
     def __init__(self):
         super().__init__()
@@ -41,16 +45,25 @@ class BaseInputWindow(QWidget):
         pass
 
     def create_button(self, text, callback):
+        """
+        Create buttons.
+        """
         button = QPushButton(text, self)
         button.clicked.connect(callback)
         self.button_dict.set_data(text, button)
         self.button_layout.addWidget(self.button_dict.get_data(text))
 
     def save_data(self):
+        """
+        Save all widget data.
+        """
         for widget in self.input_widgets:
             widget.save()
 
     def restore_data(self):
+        """
+        Restore all widget status.
+        """
         for widget in self.input_widgets:
             widget.restore()
 
@@ -65,14 +78,16 @@ class BaseInputWindow(QWidget):
             print(f"widget : {widget.log}")
 
     def show_msgbox(self, text):
-        font = QFont("Bookman Old Style", 15, QFont.Bold)
-
         msg = QMessageBox(self)
+        font = QFont("Bookman Old Style", 15, QFont.Bold)
         msg.setFont(font)
         msg.setText(text)
         msg.show()
 
     def closeEvent(self, event):
+        """
+        This is called automatically, when exit button is clicked.
+        """
         msg = QMessageBox()
         msg.setWindowTitle("Message")
         msg.setText("Are you sure you want to quit?")
@@ -92,6 +107,10 @@ class BaseInputWindow(QWidget):
 
 
 class JobSelectWindow(BaseInputWindow):
+    """
+    You can select which job to be executed.
+    """
+
     def __init__(self, query, job_data):
         super().__init__()
 
@@ -103,7 +122,6 @@ class JobSelectWindow(BaseInputWindow):
     def init_ui(self):
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
-        # self.scroll_area.setMaximumWidth(300)
 
         self.container = QWidget()
         self.container_layout = QVBoxLayout()
@@ -142,6 +160,11 @@ class JobSelectWindow(BaseInputWindow):
 
 
 class InputWindow(BaseInputWindow):
+    """
+    This is main input window
+    You can put detailed data that would be used to execute your job.
+    """
+
     def __init__(self, query, infos, pre_window=None, func=None):
         super().__init__()
 
@@ -193,6 +216,10 @@ class InputWindow(BaseInputWindow):
         self.show()
 
     def add_widget2layout(self, idx):
+        """
+        Add widgets to layout,
+        partial is needed to fix idx when it called later.
+        """
         self.input_widgets[idx].reset()
         if isinstance(self.input_widgets[idx], CheckBoxWidget):
             self.on_off_line_edit(idx, 0)
@@ -201,27 +228,32 @@ class InputWindow(BaseInputWindow):
             )
         self.container_layout.addWidget(self.input_widgets[idx])
 
-    def execute_function(self):
-        self.update_info()
-        print("execute!!!")
-        self.infos.show_all()
-        self.worker_thread = WorkerThread(self.func, **self.infos.data)
-        self.worker_thread.finished.connect(self.handle_result)
-        self.worker_thread.start()
-
-    def handle_result(self, result):
-        if result:
-            self.show_msgbox("Complete!")
+    def on_off_line_edit(self, idx, state):
+        """
+        This makes line_edits disable or enable
+        according to the checkbutton status.
+        """
+        if state == 2:
+            self.input_widgets[idx + 1].line_edit.setEnabled(True)
+            self.input_widgets[idx + 2].line_edit.setEnabled(True)
         else:
-            self.show_msgbox("Fail!")
+            self.input_widgets[idx + 1].line_edit.setDisabled(True)
+            self.input_widgets[idx + 2].line_edit.setDisabled(True)
+
+    def copy_pre_info(self):
+        """
+        deepcopy is needed to make it different object
+        from original infos
+        """
+        self.pre_infos = copy.deepcopy(self.infos)
 
     def set_info(self, value):
         self.infos = value
 
-    def copy_pre_info(self):
-        self.pre_infos = copy.deepcopy(self.infos)
-
     def update_info(self):
+        """
+        This function saves all input data to self.infos
+        """
         if self.query.is_last() and self.query.is_repeat_type():
             new_key = self.input_widgets[0].get_value()
             for idx in range(1, len(self.input_varname)):
@@ -264,16 +296,26 @@ class InputWindow(BaseInputWindow):
             self.next_window.copy_pre_info()
             self.next_window.show()
 
-    def on_off_line_edit(self, idx, state):
-        if state == 2:
-            self.input_widgets[idx + 1].line_edit.setEnabled(True)
-            self.input_widgets[idx + 2].line_edit.setEnabled(True)
+    def execute_function(self):
+        self.update_info()
+        print("execute!!!")
+        self.infos.show_all()
+        self.worker_thread = WorkerThread(self.func, **self.infos.data)
+        self.worker_thread.finished.connect(self.handle_result)
+        self.worker_thread.start()
+
+    def handle_result(self, result):
+        if result:
+            self.show_msgbox("Complete!")
         else:
-            self.input_widgets[idx + 1].line_edit.setDisabled(True)
-            self.input_widgets[idx + 2].line_edit.setDisabled(True)
+            self.show_msgbox("Fail!")
 
 
 class WorkerThread(QThread):
+    """
+    This is for controlling async functions
+    """
+
     finished = pyqtSignal(object)
 
     def __init__(self, func, **kwargs):

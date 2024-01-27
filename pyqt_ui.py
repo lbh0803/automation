@@ -11,6 +11,11 @@ from PyQt5.QtWidgets import (
 
 
 class BaseInputWidget(QWidget):
+    """
+    This is basic input widget for other input windows.
+    All types of pyqt widget can inherit this class.
+    """
+
     def __init__(self, label_text):
         super().__init__()
 

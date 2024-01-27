@@ -9,6 +9,10 @@ JOB_C = "C> Make Vector\n => ATP/PAT type are supported"
 
 
 def construct_query():
+    """
+    You can update query if you need.
+    This is allowed to write hard-coding.
+    """
     query = namedtuple("query", "common, jobA, jobB, jobC")
     common = Query()
     common.set_query(

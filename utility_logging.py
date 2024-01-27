@@ -5,6 +5,11 @@ from data import DataDict
 
 
 def func_log(func):
+    """
+    This is decorator for logging function informations.
+    It can show func_name, args, kwargs, return, error.
+    """
+
     def execute_func(*args, **kwargs):
         start = time.time()
         try:
@@ -25,6 +30,9 @@ def func_log(func):
 
 
 def print_dict(dictionary):
+    """
+    Show all dict key, value recursively.
+    """
     for key, value in dictionary.items():
         print(f"key : {key}, value: {value}")
         if isinstance(value, DataDict):

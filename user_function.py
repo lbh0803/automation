@@ -1,6 +1,10 @@
 import time
 from utility_logging import func_log, print_dict
 
+"""
+This area is for custom functions.
+"""
+
 
 @func_log
 # def make_base_info(dftmux_xls):

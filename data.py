@@ -1,7 +1,7 @@
 class DataDict:
     """
     This is class for dictionary, it can handle key error
-    And support nested dictionary structure.
+    and support nested dictionary structure.
     """
 
     def __init__(self, name=None):
@@ -16,16 +16,12 @@ class DataDict:
     def data(self, value):
         self._data = value
 
-    # def get_data(self, key, default=None):
-    #     result = self.data.get(key, default)
-    #     if result == default:
-    #         raise Exception(f"The key {key} is not in dict {self._name}")
-    #     return result
-
-    # def set_data(self, key, value):
-    #     self.data[key] = value
-
     def get_data(self, key_path):
+        """
+        This can support recursive dict.
+        You can use like below, (seperator should be .)
+        instance.get_data(user.home.room.bed)
+        """
         keys = key_path.split(".")
         current_dict = self.data
         for idx in range(len(keys) - 1):
@@ -37,6 +33,11 @@ class DataDict:
         return current_dict[keys[-1]]
 
     def set_data(self, key_path, value):
+        """
+        This can support recursive dict.
+        You can use like below, (seperator should be .)
+        instance.set_data(user.home.bed) = simons
+        """
         keys = key_path.split(".")
         current_dict = self.data
         for idx in range(len(keys) - 1):
@@ -46,6 +47,10 @@ class DataDict:
         current_dict[keys[-1]] = value
 
     def show_all(self, dictionary=None, indent=0):
+        """
+        This can show all key:value
+        and support indented view.
+        """
         if not dictionary:
             dictionary = self.data
         for key, value in dictionary.items():
@@ -76,6 +81,9 @@ class Query:
         self._query = value
 
     def get_query(self):
+        """
+        Can return sub dict according to self._cnt.
+        """
         result = self.query.get(self._cnt, None)
         if not result:
             raise Exception(f"No dictionary for cnt {self._cnt} has been assigned")
@@ -100,6 +108,11 @@ class Query:
             self._cnt -= 1
 
     def is_repeat_type(self):
+        """
+        If the number of input window is not fixed,
+        You should use repeat type.
+        ex) merge testmode for atp vector
+        """
         return self._repeat
 
     def is_last(self):
