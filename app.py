@@ -45,9 +45,6 @@ class BaseInputWindow(QWidget):
         pass
 
     def create_button(self, text, callback):
-        """
-        Create buttons.
-        """
         button = QPushButton(text, self)
         button.clicked.connect(callback)
         self.button_dict.set_data(text, button)
@@ -55,14 +52,14 @@ class BaseInputWindow(QWidget):
 
     def save_data(self):
         """
-        Save all widget data.
+        Save all widget data before moving to next/pre window.
         """
         for widget in self.input_widgets:
             widget.save()
 
     def restore_data(self):
         """
-        Restore all widget status.
+        Restore all widget status after getting back from next/pre window.
         """
         for widget in self.input_widgets:
             widget.restore()
