@@ -127,9 +127,6 @@ class NavigatorManager:
         else:
             self.next_window.show()
 
-    def show_input_window(self, *args):
-        self.next_window = BaseInputWindow(*args)
-
 
 class ExecuteManager:
     def __init__(self, func, parent):
