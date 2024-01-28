@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QVBoxLayout,
 )
-
 from view.ui_interface import BaseInputWidget
 
 

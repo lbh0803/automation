@@ -1,11 +1,9 @@
-from abc import abstractmethod
 from functools import partial
 from PyQt5.QtWidgets import (
     QScrollArea,
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QMessageBox,
 )
 from PyQt5.QtGui import QFont
 from controller.controller import (
@@ -15,51 +13,8 @@ from controller.controller import (
     NavigatorManager,
 )
 from model.data import DataModel
+from view.ui_interface import BaseInputWindow
 from view.ui_widgets import CheckBoxWidget
-
-
-class BaseInputWindow(QWidget):
-    """
-    This class is basic interface for other Qwidget classes.
-    """
-
-    @abstractmethod
-    def __init__(self, *args):
-        super().__init__()
-        pass
-
-    @abstractmethod
-    def init_ui(self):
-        pass
-
-    @abstractmethod
-    def add_widget2layout(self, idx):
-        pass
-
-    @abstractmethod
-    def show_next_window(self):
-        pass
-
-    def closeEvent(self, event):
-        """
-        This is called automatically, when exit button is clicked.
-        """
-        msg = QMessageBox()
-        msg.setWindowTitle("Message")
-        msg.setText("Are you sure you want to quit?")
-
-        font = QFont("Bookman Old Style", 15, QFont.Bold)
-        msg.setFont(font)
-
-        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        msg.setDefaultButton(QMessageBox.No)
-
-        reply = msg.exec_()
-
-        if reply == QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
 
 
 class JobSelectWindow(BaseInputWindow):

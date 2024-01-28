@@ -37,8 +37,8 @@ class BaseInputWidget(QWidget):
     @abstractmethod
     def __deepcopy__(self, memo):
         pass
-    
-    
+
+
 class BaseInputWindow(QWidget):
     """
     This class is basic interface for other Qwidget classes.
@@ -81,5 +81,3 @@ class BaseInputWindow(QWidget):
             event.accept()
         else:
             event.ignore()
-            
-

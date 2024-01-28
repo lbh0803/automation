@@ -3,7 +3,6 @@ import logging
 import sys
 from PyQt5.QtWidgets import QApplication
 from controller.user_function import make_atp, make_cfg, make_tb
-
 from model.config import JOB_A, JOB_B, JOB_C, construct_query
 from model.data import DataModel
 from view.ui_window import JobSelectWindow
@@ -16,7 +15,9 @@ class MainApplication:
 
     def setup(self):
         self.query = construct_query()
-        logging.basicConfig(level=logging.INFO, format="%(levelname)s [%(asctime)s] - %(message)s")
+        logging.basicConfig(
+            level=logging.INFO, format="%(levelname)s [%(asctime)s] - %(message)s"
+        )
         self.job = DataModel("JOB")
         job_info = namedtuple("info", "query, func")
         info_A = job_info(self.query.jobA, make_tb)

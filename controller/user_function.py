@@ -1,6 +1,7 @@
 import time
 from controller.utility import func_log
 
+
 """
 This area is for custom functions.
 """
