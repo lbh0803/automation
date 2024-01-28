@@ -1,45 +1,13 @@
 from abc import abstractmethod
 from PyQt5.QtWidgets import (
-    QWidget,
     QLineEdit,
     QPlainTextEdit,
     QComboBox,
     QCheckBox,
     QVBoxLayout,
-    QLabel,
 )
 
-
-class BaseInputWidget(QWidget):
-    """
-    This is basic input widget for other input windows.
-    All types of pyqt widget can inherit this class.
-    """
-
-    def __init__(self, label_text):
-        super().__init__()
-
-        self.label = QLabel(label_text, self)
-
-    @abstractmethod
-    def get_value(self):
-        pass
-
-    @abstractmethod
-    def reset(self):
-        pass
-
-    @abstractmethod
-    def save(self):
-        pass
-
-    @abstractmethod
-    def restore(self):
-        pass
-
-    @abstractmethod
-    def __deepcopy__(self, memo):
-        pass
+from view.ui_interface import BaseInputWidget
 
 
 class LineEditWidget(BaseInputWidget):

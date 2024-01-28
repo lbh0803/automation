@@ -1,5 +1,5 @@
 import time
-from utility_logging import func_log, print_dict
+from controller.utility import func_log
 
 """
 This area is for custom functions.
@@ -8,51 +8,51 @@ This area is for custom functions.
 
 @func_log
 # def make_base_info(dftmux_xls):
-def make_base_info(**data):
-    # print_dict(data)
+def make_base_info(*args, **kwargs):
+    # print_dict(kwargs)
     time.sleep(0.5)
     pass
 
 
 @func_log
 # def make_tmode_info(signal_xls):
-def make_tmode_info(**data):
-    # print_dict(data)
+def make_tmode_info(*args, **kwargs):
+    # print_dict(kwargs)
     time.sleep(0.5)
     pass
 
 
 @func_log
 # def make_tb(output_path):
-def make_tb(**data):
-    # print_dict(data)
+def make_tb(*args, **kwargs):
+    # print_dict(kwargs)
     time.sleep(0.5)
     pass
 
 
 @func_log
 # def make_atp(eds_path):
-def make_atp(**data):
-    # print_dict(data)
+def make_atp(*args, **kwargs):
+    # print_dict(kwargs)
     time.sleep(0.5)
     pass
 
 
 @func_log
-def make_cfg(**data):
+def make_cfg(*args, **kwargs):
     try:
-        dftmux_xls = data.pop("dftmux_xls")
+        dftmux_xls = kwargs.pop("dftmux_xls")
         print(f"dftmux_xls file is {dftmux_xls}")
     except KeyError:
-        print(f"var dftmux_xls is not in input data")
+        print(f"var dftmux_xls is not in input kwargs")
     try:
-        eds_path = data.pop("eds_path")
+        eds_path = kwargs.pop("eds_path")
         print(f"eds_path is {eds_path}")
     except KeyError:
-        print(f"var eds_path is not in input data")
-    mode_sequence = list(data.keys())
+        print(f"var eds_path is not in input kwargs")
+    mode_sequence = list(kwargs.keys())
     for mode in mode_sequence:
-        if data[mode]["main_mode"]:
+        if kwargs[mode]["main_mode"]:
             print(f"main mode is {mode}!")
     time.sleep(0.5)
     pass

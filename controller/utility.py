@@ -1,7 +1,29 @@
 import logging
 import time
+from model.data import DataModel
+from PyQt5.QtCore import QThread, pyqtSignal
 
-from data import DataModel
+
+class WorkerThread(QThread):
+    """
+    This is for controlling async functions
+    """
+
+    finished = pyqtSignal(object)
+
+    def __init__(self, func, *args, **kwargs):
+        super().__init__()
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        try:
+            self.func(*self.args, **self.kwargs)
+            result = True
+        except Exception("execute funcion failed"):
+            result = False
+        self.finished.emit(result)
 
 
 def func_log(func):

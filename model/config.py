@@ -1,6 +1,6 @@
 from collections import namedtuple
-from data import Query
-from ui_widgets import (
+from model.data import Query
+from view.ui_widgets import (
     CheckBoxWidget,
     ComboBoxWidget,
     LineEditWidget,
@@ -16,7 +16,7 @@ JOB_C = "C> Make Vector\n => ATP/PAT type are supported"
 def construct_query():
     """
     You can update query if you need.
-    This is allowed to write hard-coding.
+    This function makes database for query.
     """
     query = namedtuple("query", "common, jobA, jobB, jobC")
     common = Query()
