@@ -14,7 +14,7 @@ from controller.controller import (
 )
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
-from view.ui_widgets import CheckBoxWidget
+from view.ui_widget import CheckBoxWidget
 
 
 class JobSelectWindow(BaseInputWindow):

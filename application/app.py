@@ -9,8 +9,10 @@ from view.ui_window import JobSelectWindow
 
 
 class MainApplication:
-    def __init__(self):
+    def __init__(self, job, window):
         self.app = QApplication([])
+        self.job = job
+        self.window = window
         self.setup()
 
     def setup(self):
@@ -18,7 +20,6 @@ class MainApplication:
         logging.basicConfig(
             level=logging.INFO, format="%(levelname)s [%(asctime)s] - %(message)s"
         )
-        self.job = DataModel("JOB")
         job_info = namedtuple("info", "query, func")
         info_A = job_info(self.query.jobA, make_tb)
         info_B = job_info(self.query.jobB, make_cfg)
@@ -28,10 +29,11 @@ class MainApplication:
         self.job.set_data(JOB_C, info_C)
 
     def run(self):
-        self.window = JobSelectWindow(self.query.common, self.job)
+        window = self.window(self.query.common, self.job)
         sys.exit(self.app.exec_())
 
 
 if __name__ == "__main__":
-    app = MainApplication()
+    job = DataModel("JOB")
+    app = MainApplication(job, JobSelectWindow)
     app.run()

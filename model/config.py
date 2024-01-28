@@ -1,6 +1,6 @@
 from collections import namedtuple
 from model.data import Query
-from view.ui_widgets import (
+from view.ui_widget import (
     CheckBoxWidget,
     ComboBoxWidget,
     LineEditWidget,
