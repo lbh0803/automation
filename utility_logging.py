@@ -1,7 +1,7 @@
 import logging
 import time
 
-from data import DataDict
+from data import DataModel
 
 
 def func_log(func):
@@ -35,7 +35,7 @@ def print_dict(dictionary):
     """
     for key, value in dictionary.items():
         print(f"key : {key}, value: {value}")
-        if isinstance(value, DataDict):
+        if isinstance(value, DataModel):
             print_dict(value.data)
         elif isinstance(value, dict):
             print_dict(value)

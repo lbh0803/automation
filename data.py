@@ -1,4 +1,7 @@
-class DataDict:
+from functools import lru_cache
+
+
+class DataModel:
     """
     This is class for dictionary, it can handle key error
     and support nested dictionary structure.
@@ -16,6 +19,8 @@ class DataDict:
     def data(self, value):
         self._data = value
 
+    # @lru_cache(maxsize=10)
+    # Cache is inefficient because of various inputs and low repetitive access.
     def get_data(self, key_path):
         """
         This can support recursive dict.

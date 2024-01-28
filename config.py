@@ -1,6 +1,11 @@
 from collections import namedtuple
 from data import Query
-from pyqt_ui import CheckBoxWidget, ComboBoxWidget, LineEditWidget, PlainTextEditWidget
+from ui_widgets import (
+    CheckBoxWidget,
+    ComboBoxWidget,
+    LineEditWidget,
+    PlainTextEditWidget,
+)
 
 
 JOB_A = "A> Make TESTMODE TB\n => DFTMUX connection check\n => PAD <-> IP"

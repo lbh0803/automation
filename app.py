@@ -17,8 +17,8 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QThread, pyqtSignal
 from config import JOB_A, JOB_B, JOB_C, construct_query
 
-from data import DataDict
-from pyqt_ui import CheckBoxWidget
+from data import DataModel
+from ui_widgets import CheckBoxWidget
 from user_function import make_atp, make_cfg, make_tb
 
 
@@ -152,7 +152,7 @@ class JobSelectWindow(BaseInputWindow):
         self.save_data()
         self.hide()
         self.next_window = InputWindow(
-            self.next_query, DataDict("INFO"), self, self.next_func
+            self.next_query, DataModel("INFO"), self, self.next_func
         )
 
 
@@ -173,7 +173,7 @@ class InputWindow(BaseInputWindow):
         self.func = func
         self.input_varname = list(query.get_query().keys())
         self.input_widgets = list(query.get_query().values())
-        self.button_dict = DataDict("BUTTON")
+        self.button_dict = DataModel("BUTTON")
         self.init_ui()
 
     def init_ui(self):
@@ -335,7 +335,7 @@ if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO, format="%(levelname)s [%(asctime)s] - %(message)s"
     )
-    job = DataDict("JOB")
+    job = DataModel("JOB")
     job_info = namedtuple("info", "query, func")
     info_A = job_info(query.jobA, make_tb)
     info_B = job_info(query.jobB, make_cfg)
