@@ -30,16 +30,17 @@ class ButtonManager:
 
 
 class DataManager:
-    def __init__(self, query, infos):
+    def __init__(self, query, info, base_info=None):
         self.query = query
-        self.infos = infos
-        self.pre_infos = copy.deepcopy(self.infos)
+        self.info = info
+        self.base_info = base_info
+        self.pre_info = copy.deepcopy(self.info)
         self._input_varname = list(query.get_query().keys())
         self._input_widgets = list(query.get_query().values())
         self.widget_number = len(self._input_widgets)
 
     def set_info(self, value):
-        self.infos = value
+        self.info = value
 
     def save_data(self):
         """
@@ -75,32 +76,32 @@ class DataManager:
     def copy_pre_info(self):
         """
         deepcopy is needed to make it different object
-        from original infos
+        from original info
         """
-        self.pre_infos = copy.deepcopy(self.infos)
+        self.pre_info = copy.deepcopy(self.info)
 
     def update_info(self):
         """
-        This function saves all input data to self.infos
+        This function saves all input data to self.info
         """
         if self.query.is_last() and self.query.is_repeat_type():
             new_key = self._input_widgets[0].get_value()
             for idx in range(1, self.widget_number):
-                self.infos.set_data(
+                self.info.set_data(
                     new_key + "." + self._input_varname[idx],
                     self._input_widgets[idx].get_value(),
                 )
         else:
             for idx in range(self.widget_number):
-                self.infos.set_data(
+                self.info.set_data(
                     self._input_varname[idx], self._input_widgets[idx].get_value()
                 )
 
     def restore_info(self):
-        self.infos = copy.deepcopy(self.pre_infos)
+        self.info = copy.deepcopy(self.pre_info)
 
     def print_all(self):
-        self.infos.show_all()
+        self.info.show_all()
 
     def get_widget(self, idx):
         return self._input_widgets[idx]

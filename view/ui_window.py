@@ -1,4 +1,5 @@
 from functools import partial
+import logging
 from PyQt5.QtWidgets import (
     QScrollArea,
     QWidget,
@@ -12,6 +13,7 @@ from controller.controller import (
     ExecuteManager,
     NavigatorManager,
 )
+from controller.user_function import make_base_info
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
 from view.ui_widget import CheckBoxWidget
@@ -22,12 +24,12 @@ class JobSelectWindow(BaseInputWindow):
     You can select which job to be executed.
     """
 
-    def __init__(self, query, infos):
+    def __init__(self, query, info):
         super().__init__()
 
         self.button_manager = ButtonManager(self)
         self.buttons = {"Exit": self.close, "Next": self.show_next_window}
-        self.data_manager = DataManager(query, infos)
+        self.data_manager = DataManager(query, info)
         self.navi_manager = NavigatorManager()
         self.init_ui()
 
@@ -37,7 +39,7 @@ class JobSelectWindow(BaseInputWindow):
 
         self.container = QWidget()
         self.container_layout = QVBoxLayout()
-        self.container_layout.setSpacing(150)
+        self.container_layout.setSpacing(100)
 
         self.layout = QVBoxLayout(self)
         self.font = QFont("Bookman Old Style", 12, QFont.Bold)
@@ -61,13 +63,15 @@ class JobSelectWindow(BaseInputWindow):
         self.show()
 
     def show_next_window(self):
+        self.base_info = make_base_info()
         self.current_job = self.data_manager.get_widget(0).get_value()
-        self.next_query = self.data_manager.infos.get_data(self.current_job).query
-        self.next_func = self.data_manager.infos.get_data(self.current_job).func
+        self.next_query = self.data_manager.info.get_data(self.current_job).query_func(self.base_info)
+        self.next_func = self.data_manager.info.get_data(self.current_job).execute_func
         self.data_manager.save_data()
         self.hide()
+        logging.info(f"Selected job is {self.current_job}")
         self.navi_manager.show_next_window(
-            InputWindow, self.next_query, DataModel("INFO"), self, self.next_func
+            InputWindow, self.next_query, DataModel("INFO"), self.base_info, self, self.next_func
         )
         self.navi_manager.next_window = None
 
@@ -78,7 +82,7 @@ class InputWindow(BaseInputWindow):
     You can put detailed data that would be used to execute your job.
     """
 
-    def __init__(self, query, infos, pre_window=None, func=None):
+    def __init__(self, query, info, base_info, pre_window=None, func=None):
         super().__init__()
 
         self.button_manager = ButtonManager(self)
@@ -87,7 +91,7 @@ class InputWindow(BaseInputWindow):
             "Next": self.show_next_window,
             "Submit": self.execute_function,
         }
-        self.data_manager = DataManager(query, infos)
+        self.data_manager = DataManager(query, info, base_info)
         self.navi_manager = NavigatorManager(pre_window)
         self.execute_manager = ExecuteManager(func, self)
         self.init_ui()
@@ -164,13 +168,14 @@ class InputWindow(BaseInputWindow):
         self.hide()
         if self.navi_manager.next_window:
             self.navi_manager.next_window.data_manager.restore_data()
-            self.navi_manager.next_window.data_manager.set_info(self.data_manager.infos)
+            self.navi_manager.next_window.data_manager.set_info(self.data_manager.info)
             self.navi_manager.next_window.data_manager.copy_pre_info()
         self.data_manager.copy_next_query()
         self.navi_manager.show_next_window(
             InputWindow,
             self.data_manager.next_query,
-            self.data_manager.infos,
+            self.data_manager.info,
+            self.data_manager.base_info,
             self,
             self.execute_manager.func,
         )
@@ -178,4 +183,4 @@ class InputWindow(BaseInputWindow):
     def execute_function(self):
         self.data_manager.update_info()
         self.data_manager.print_all()
-        self.execute_manager.execute_function(**self.data_manager.infos.data)
+        self.execute_manager.execute_function(**self.data_manager.info.data)

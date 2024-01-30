@@ -102,6 +102,52 @@ class CheckBoxWidget(BaseInputWidget):
         return new_widget
 
 
+class MultiCheckBoxWidget(BaseInputWidget):
+    def __init__(self, label_text, *items):
+        super().__init__(label_text)
+
+        self.items = items
+        self.check_box_list = list()
+        self.layout = QVBoxLayout(self)
+        self.layout.addWidget(self.label)
+
+        for item in self.items:
+            self.check_box = QCheckBox(self)
+            self.check_box.setText(item)
+            self.check_box_list.append(self.check_box)
+            self.layout.addWidget(self.check_box)
+
+        self.setLayout(self.layout)
+
+    def get_value(self):
+        return_list = list()
+        for check_box in self.check_box_list:
+            if check_box.isChecked():
+                return_list.append(check_box.text())
+        return return_list
+
+    def reset(self):
+        for check_box in self.check_box_list:
+            check_box.setChecked(False)
+
+    def save(self):
+        self.log = [False] * len(self.items)
+        for idx in range(len(self.items)):
+            if self.check_box_list[idx].isChecked():
+                self.log[idx] = True
+
+    def restore(self):
+        for idx in range(len(self.items)):
+            self.check_box_list[idx].setChecked(self.log[idx])
+
+    def __deepcopy__(self, memo):
+        new_widget = MultiCheckBoxWidget(self.label.text(), *self.items)
+        for idx in range(len(self.items)):
+            new_widget.check_box_list[idx].setChecked(self.check_box_list[idx].isChecked())
+        memo[id(self)] = new_widget
+        return new_widget
+
+
 class PlainTextEditWidget(BaseInputWidget):
     def __init__(self, label_text):
         super().__init__(label_text)

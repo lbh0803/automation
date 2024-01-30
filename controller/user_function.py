@@ -1,5 +1,6 @@
 import time
 from controller.utility import func_log
+from model.data import DataModel
 
 
 """
@@ -12,7 +13,13 @@ This area is for custom functions.
 def make_base_info(*args, **kwargs):
     # print_dict(kwargs)
     time.sleep(0.5)
-    pass
+    base_info = DataModel()
+    base_info.set_data("TEST_MODE_1", 0)
+    base_info.set_data("TEST_MODE_2", 1)
+    base_info.set_data("TEST_MODE_3", 2)
+    base_info.set_data("TEST_MODE_4", 3)
+    base_info.set_data("TEST_MODE_5", 4)
+    return base_info
 
 
 @func_log
@@ -56,4 +63,3 @@ def make_cfg(*args, **kwargs):
         if kwargs[mode]["main_mode"]:
             print(f"main mode is {mode}!")
     time.sleep(0.5)
-    pass
