@@ -63,8 +63,9 @@ class JobSelectWindow(BaseInputWindow):
         self.show()
 
     def show_next_window(self):
-        self.base_info = make_base_info()
         self.current_job = self.data_manager.get_widget(0).get_value()
+        base_info_input = [self.data_manager.get_widget(idx).get_value() for idx in range(1, self.data_manager.widget_number)]
+        self.base_info = make_base_info(*base_info_input)
         self.next_query = self.data_manager.info.get_data(self.current_job).query_func(self.base_info)
         self.next_func = self.data_manager.info.get_data(self.current_job).execute_func
         self.data_manager.save_data()
@@ -139,9 +140,9 @@ class InputWindow(BaseInputWindow):
         """
         widget = self.data_manager.get_widget(idx)
         widget.reset()
-        if isinstance(widget, CheckBoxWidget):
-            self.on_off_line_edit(idx, 0)
-            widget.check_box.stateChanged.connect(partial(self.on_off_line_edit, idx))
+        # if isinstance(widget, CheckBoxWidget):
+        #     self.on_off_line_edit(idx, 0)
+        #     widget.check_box.stateChanged.connect(partial(self.on_off_line_edit, idx))
         self.container_layout.addWidget(widget)
 
     def on_off_line_edit(self, idx, state):
@@ -183,4 +184,4 @@ class InputWindow(BaseInputWindow):
     def execute_function(self):
         self.data_manager.update_info()
         self.data_manager.print_all()
-        self.execute_manager.execute_function(**self.data_manager.info.data)
+        self.execute_manager.execute_function(self.data_manager.base_info, self.data_manager.info)
