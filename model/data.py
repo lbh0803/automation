@@ -76,6 +76,7 @@ class Query:
         self._cnt = 0
         self._repeat = repeat
         self._repeat_cnt = 1
+        self._repeat_break = False
 
     @property
     def query(self):
@@ -102,11 +103,13 @@ class Query:
 
     def up_cnt(self):
         if not self.is_last():
-            self._cnt += 1
+            if not self.is_repeat_type() or self._repeat_break:
+                self._cnt += 1
         else:
             self._repeat_cnt += 1
 
     def down_cnt(self):
+        # self.set_repeat_break(False)
         if self._repeat_cnt > 1:
             self._repeat_cnt -= 1
         elif not self.is_first():
@@ -116,9 +119,12 @@ class Query:
         """
         If the number of input window is not fixed,
         You should use repeat type.
-        ex) merge testmode for atp vector
+        ex) Get test mode information sequentially
         """
-        return self._repeat
+        return self._cnt == self._repeat
+
+    def set_repeat_break(self, value):
+        self._repeat_break = value
 
     def is_last(self):
         if self._cnt == len(self.query) - 1:

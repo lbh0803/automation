@@ -1,11 +1,8 @@
 from abc import abstractmethod
-from PyQt5.QtWidgets import (
-    QLineEdit,
-    QPlainTextEdit,
-    QComboBox,
-    QCheckBox,
-    QVBoxLayout,
-)
+
+from PyQt5.QtWidgets import (QCheckBox, QComboBox, QLineEdit, QPlainTextEdit,
+                             QVBoxLayout)
+
 from view.ui_interface import BaseInputWidget
 
 
@@ -20,7 +17,7 @@ class LineEditWidget(BaseInputWidget):
         self.setLayout(self.layout)
 
     def get_value(self):
-        return self.line_edit.text()
+        return self.line_edit.text().strip()
 
     def reset(self):
         self.line_edit.setText("")
@@ -52,7 +49,7 @@ class ComboBoxWidget(BaseInputWidget):
         self.setLayout(self.layout)
 
     def get_value(self):
-        return self.combo_box.currentText()
+        return self.combo_box.currentText().strip()
 
     def reset(self):
         self.combo_box.setCurrentIndex(0)
@@ -123,7 +120,7 @@ class MultiCheckBoxWidget(BaseInputWidget):
         return_list = list()
         for check_box in self.check_box_list:
             if check_box.isChecked():
-                return_list.append(check_box.text())
+                return_list.append(check_box.text().strip())
         return return_list
 
     def reset(self):
@@ -160,7 +157,7 @@ class PlainTextEditWidget(BaseInputWidget):
         self.setLayout(self.layout)
 
     def get_value(self):
-        return self.line_edit.toPlainText().split("\n")
+        return self.line_edit.toPlainText().strip().split("\n")
 
     def reset(self):
         self.line_edit.setPlainText("")

@@ -1,11 +1,10 @@
 import copy
+
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QMessageBox, QPushButton
+
 from controller.utility import WorkerThread
 from model.data import DataModel
-from PyQt5.QtWidgets import (
-    QPushButton,
-    QMessageBox,
-)
-from PyQt5.QtGui import QFont
 
 
 class ButtonManager:
@@ -84,21 +83,24 @@ class DataManager:
         """
         This function saves all input data to self.info
         """
-        if self.query.is_last() and self.query.is_repeat_type():
-            new_key = self._input_widgets[0].get_value()
-            for idx in range(1, self.widget_number):
+        if self.query.is_repeat_type():
+            # key : loop_data.mode_name.step ex) loop_data.TEST_MODE_ADC.VCD2WGL
+            new_key = "loop_data." + self._input_widgets[0].get_value() + "." + self._input_widgets[1].get_value()
+            for idx in range(2, self.widget_number):
                 self.info.set_data(
                     new_key + "." + self._input_varname[idx],
                     self._input_widgets[idx].get_value(),
                 )
+            self._check_repeat_break(self._input_widgets[-1].get_value())
         else:
             for idx in range(self.widget_number):
-                self.info.set_data(
-                    self._input_varname[idx], self._input_widgets[idx].get_value()
-                )
+                self.info.set_data(self._input_varname[idx], self._input_widgets[idx].get_value())
 
     def restore_info(self):
         self.info = copy.deepcopy(self.pre_info)
+
+    def _check_repeat_break(self, value):
+        self.query.set_repeat_break(value)
 
     def print_all(self):
         self.info.show_all()

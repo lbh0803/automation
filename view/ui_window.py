@@ -1,18 +1,11 @@
-from functools import partial
 import logging
-from PyQt5.QtWidgets import (
-    QScrollArea,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-)
+from functools import partial
+
 from PyQt5.QtGui import QFont
-from controller.controller import (
-    ButtonManager,
-    DataManager,
-    ExecuteManager,
-    NavigatorManager,
-)
+from PyQt5.QtWidgets import QHBoxLayout, QScrollArea, QVBoxLayout, QWidget
+
+from controller.controller import (ButtonManager, DataManager, ExecuteManager,
+                                   NavigatorManager)
 from controller.user_function import make_base_info
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
@@ -39,7 +32,7 @@ class JobSelectWindow(BaseInputWindow):
 
         self.container = QWidget()
         self.container_layout = QVBoxLayout()
-        self.container_layout.setSpacing(100)
+        # self.container_layout.setSpacing(100)
 
         self.layout = QVBoxLayout(self)
         self.font = QFont("Bookman Old Style", 12, QFont.Bold)
@@ -64,7 +57,9 @@ class JobSelectWindow(BaseInputWindow):
 
     def show_next_window(self):
         self.current_job = self.data_manager.get_widget(0).get_value()
-        base_info_input = [self.data_manager.get_widget(idx).get_value() for idx in range(1, self.data_manager.widget_number)]
+        base_info_input = [
+            self.data_manager.get_widget(idx).get_value() for idx in range(1, self.data_manager.widget_number)
+        ]
         self.base_info = make_base_info(*base_info_input)
         self.next_query = self.data_manager.info.get_data(self.current_job).query_func(self.base_info)
         self.next_func = self.data_manager.info.get_data(self.current_job).execute_func
@@ -72,7 +67,12 @@ class JobSelectWindow(BaseInputWindow):
         self.hide()
         logging.info(f"Selected job is {self.current_job}")
         self.navi_manager.show_next_window(
-            InputWindow, self.next_query, DataModel("INFO"), self.base_info, self, self.next_func
+            InputWindow,
+            self.next_query,
+            DataModel("INFO"),
+            self.base_info,
+            self,
+            self.next_func,
         )
         self.navi_manager.next_window = None
 

@@ -1,7 +1,9 @@
 import logging
 import time
-from model.data import DataModel
+
 from PyQt5.QtCore import QThread, pyqtSignal
+
+from model.data import DataModel
 
 
 class WorkerThread(QThread):
@@ -43,7 +45,7 @@ def func_log(func):
         except Exception as e:
             end = time.time()
             logging.error(
-                f"function {func.__name__} failed, \n error: {str(e)} \n running time : {end-start}"
+                f"function {func.__name__} failed, \n args : {args} \n kwargs : {kwargs} \n error: {str(e)} \n running time : {end-start}"
             )
             raise
         return result

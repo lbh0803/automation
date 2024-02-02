@@ -1,10 +1,7 @@
 from abc import abstractmethod
-from PyQt5.QtWidgets import (
-    QWidget,
-    QMessageBox,
-    QLabel,
-)
+
 from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QLabel, QMessageBox, QWidget
 
 
 class BaseInputWidget(QWidget):
