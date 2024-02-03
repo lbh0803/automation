@@ -1,4 +1,5 @@
 import copy
+import logging
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QMessageBox, QPushButton
@@ -21,7 +22,7 @@ class ButtonManager:
         try:
             return self.button_data.get_data(key)
         except KeyError:
-            print(f"Key {key} is not in Button manager")
+            logging.error(f"Key {key} is not in Button manager")
             raise
 
     def enable_control(self, key, enable):
@@ -56,14 +57,14 @@ class DataManager:
             widget.restore()
 
     def print_restored_data(self):
-        print("restored data")
+        logging.info("restored data")
         for widget in self._input_widgets:
-            print(f"widget : {widget.get_value()}")
+            logging.info(f"widget : {widget.get_value()}")
 
     def print_saved_data(self):
-        print("saved data")
+        logging.info("saved data")
         for widget in self._input_widgets:
-            print(f"widget : {widget.log}")
+            logging.info(f"widget : {widget.log}")
 
     def copy_next_query(self):
         """
@@ -120,7 +121,7 @@ class NavigatorManager:
         try:
             self.pre_window.data_manager.restore_info()
         except Exception:
-            print("Previous window is job select window")
+            logging.info("Previous window is job select window")
             pass
         self.pre_window.show()
 
@@ -137,7 +138,6 @@ class ExecuteManager:
         self._parent = parent
 
     def execute_function(self, *args, **kwargs):
-        print("execute!!!")
         self.worker_thread = WorkerThread(self.func, *args, **kwargs)
         self.worker_thread.finished.connect(self.handle_result)
         self.worker_thread.start()

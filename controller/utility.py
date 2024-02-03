@@ -58,7 +58,7 @@ def print_dict(dictionary):
     Show all dict key, value recursively.
     """
     for key, value in dictionary.items():
-        print(f"key : {key}, value: {value}")
+        logging.info(f"key : {key}, value: {value}")
         if isinstance(value, DataModel):
             print_dict(value.data)
         elif isinstance(value, dict):

@@ -94,17 +94,13 @@ def get_mode_info(df, mode_info):
 
 
 @func_log
-# def make_tmode_info(signal_xls):
 def make_tmode_info(*args, **kwargs):
-    # print_dict(kwargs)
     time.sleep(0.5)
     pass
 
 
 @func_log
-# def make_tb(output_path):
 def make_tb(*args, **kwargs):
-    # print_dict(kwargs)
     time.sleep(0.5)
     pass
 
@@ -351,8 +347,13 @@ def run_command(command, input_data):
     """
     Execute linux command using subprocess module
     """
-    print(f"command : {command}, input : {input_data}")
-    process = subprocess.Popen(command.split() , stdin=subprocess.PIPE, universal_newlines=True)
-    process.communicate(input=input_data)
+    try:
+        process = subprocess.Popen(command.split() , stdin=subprocess.PIPE, universal_newlines=True)
+        process.communicate(input=input_data)
+        logging.info(f"command : {command}, input : {input_data} done!, return code : {process.returncode}")
+    except Exception:
+        logging.error(f"command : {command}, input : {input_data} fail!")
+        raise
+        
 
 
