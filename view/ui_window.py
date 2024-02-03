@@ -4,8 +4,7 @@ from functools import partial
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QHBoxLayout, QScrollArea, QVBoxLayout, QWidget
 
-from controller.controller import (ButtonManager, DataManager, ExecuteManager,
-                                   NavigatorManager)
+from controller.controller import (ButtonManager, DataManager, ExecuteManager, NavigatorManager)
 from controller.user_function import make_base_info
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
@@ -58,10 +57,12 @@ class JobSelectWindow(BaseInputWindow):
     def show_next_window(self):
         self.current_job = self.data_manager.get_widget(0).get_value()
         base_info_input = [
-            self.data_manager.get_widget(idx).get_value() for idx in range(1, self.data_manager.widget_number)
+            self.data_manager.get_widget(idx).get_value()
+            for idx in range(1, self.data_manager.widget_number)
         ]
         self.base_info = make_base_info(*base_info_input)
-        self.next_query = self.data_manager.info.get_data(self.current_job).query_func(self.base_info)
+        self.next_query = self.data_manager.info.get_data(self.current_job).query_func(
+            self.base_info)
         self.next_func = self.data_manager.info.get_data(self.current_job).execute_func
         self.data_manager.save_data()
         self.hide()

@@ -9,6 +9,7 @@ from model.data import DataModel
 
 
 class ButtonManager:
+
     def __init__(self, parent):
         self.button_data = DataModel("BUTTON")
         self._parent = parent
@@ -30,6 +31,7 @@ class ButtonManager:
 
 
 class DataManager:
+
     def __init__(self, query, info, base_info=None):
         self.query = query
         self.info = info
@@ -86,7 +88,8 @@ class DataManager:
         """
         if self.query.is_repeat_type():
             # key : loop_data.mode_name.step ex) loop_data.TEST_MODE_ADC.VCD2WGL
-            new_key = "loop_data." + self._input_widgets[0].get_value() + "." + self._input_widgets[1].get_value()
+            new_key = "loop_data." + self._input_widgets[0].get_value(
+            ) + "." + self._input_widgets[1].get_value()
             for idx in range(2, self.widget_number):
                 self.info.set_data(
                     new_key + "." + self._input_varname[idx],
@@ -111,6 +114,7 @@ class DataManager:
 
 
 class NavigatorManager:
+
     def __init__(self, pre_window=None):
         self.pre_window = pre_window
         self.next_window = None
@@ -133,6 +137,7 @@ class NavigatorManager:
 
 
 class ExecuteManager:
+
     def __init__(self, func, parent):
         self.func = func
         self._parent = parent

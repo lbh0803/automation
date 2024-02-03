@@ -1,8 +1,8 @@
 from collections import namedtuple
 
 from model.data import Query
-from view.ui_widget import (CheckBoxWidget, ComboBoxWidget, LineEditWidget,
-                            MultiCheckBoxWidget, PlainTextEditWidget)
+from view.ui_widget import (CheckBoxWidget, ComboBoxWidget, LineEditWidget, MultiCheckBoxWidget,
+                            PlainTextEditWidget)
 
 JOB_A = "A> Make TESTMODE TB\n => DFTMUX connection check\n => PAD <-> IP"
 JOB_B = "B> Make VECTOR CFG File\n => Setup stage before making VECTOR"
@@ -72,7 +72,8 @@ def construct_b_query(base_info):
         *base_info.data.keys(),
     )
     jobB.set_query(2, "step", ComboBoxWidget, ">> Run Step", "VCD2WGL", "VCD2ATP", "WGL2WGL")
-    jobB.set_query(2, "main_step", CheckBoxWidget, ">> Main Step?\n>> It determines vector name", "Y")
+    jobB.set_query(2, "main_step", CheckBoxWidget, ">> Main Step?\n>> It determines vector name",
+                   "Y")
     jobB.set_query(2, "path", LineEditWidget, ">> Source File Directory\nex) /USER/SRC")
     jobB.set_query(
         2,
@@ -102,25 +103,26 @@ def construct_b_query(base_info):
         2,
         "cycle",
         LineEditWidget,
-        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\nFrom this, for vcd conversion\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n >> CYCLE Information - Period\nex) 100",
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n***FROM HERE, DATA FOR VCD CONVERSION***\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n >> CYCLE Information - Period\nex) 100",
     )
     jobB.set_query(
         2,
         "pin_type",
         PlainTextEditWidget,
-        ">> PINTYPE Information\n>> If you want to override default pintype, write here \nDefault) \ninput -> PINTYPE NRZ XGPIO4 @0;\noutput -> PINTYPE STB XGPIO5 @cycle * 0.9",
+        ">> PINTYPE Information\n>> If you want to override default pintype, write here \nDefault) \ninput -> PINTYPE NRZ XGPIO4 @0;\noutput -> PINTYPE STB XGPIO5 @CYCLE * 0.9",
     )
     jobB.set_query(2, "bidirection_control", LineEditWidget, ">> Bidirection Control Signal")
-    jobB.set_query(2, "last", CheckBoxWidget, ">> Is last? \nIf it is the last sequence, check this", "Y")
-    
+    jobB.set_query(2, "last", CheckBoxWidget,
+                   ">> Is last? \n>> If it is the last sequence, check this", "Y")
+
     jobB.set_query(3, "repeat", LineEditWidget, ">> Repeat Threshold,\nex) 2")
     jobB.set_query(3, "dev", LineEditWidget, ">> DEV Step,\nex) EVT0_ML3_DEV00")
-    jobB.set_query(3, "export", LineEditWidget, ">> Export Directory,\nex) /USER/EDS/EXPORt")
+    jobB.set_query(3, "export", LineEditWidget, ">> Export Directory,\nex) /USER/EDS/EXPORT")
     jobB.set_query(
         3,
         "more_info",
         PlainTextEditWidget,
-        ">> If you need more information, write here in format '$STEP $COMMAND'\nex) merge2atp ADD_PIN XTCXO input = 0;",
+        ">> If you need more information, write here in format \n>> This would be applied to the merge2atp step\nex) ADD_PIN XTCXO input = 0;",
     )
 
     return jobB
@@ -129,11 +131,5 @@ def construct_b_query(base_info):
 def construct_c_query(base_info):
     jobC = Query()
     jobC.set_query(0, "eds_path", LineEditWidget, ">> EDS Working Path\nex) /USER/EDS")
-    jobC.set_query(
-        1,
-        "main_mode",
-        ComboBoxWidget,
-        ">> Target Mode",
-        *base_info.data.keys(),
-    )
+    jobC.set_query(1, "main_mode", ComboBoxWidget, ">> Target Mode", *base_info.data.keys())
     return jobC

@@ -1,12 +1,12 @@
 from abc import abstractmethod
 
-from PyQt5.QtWidgets import (QCheckBox, QComboBox, QLineEdit, QPlainTextEdit,
-                             QVBoxLayout)
+from PyQt5.QtWidgets import (QCheckBox, QComboBox, QLineEdit, QPlainTextEdit, QVBoxLayout)
 
 from view.ui_interface import BaseInputWidget
 
 
 class LineEditWidget(BaseInputWidget):
+
     def __init__(self, label_text):
         super().__init__(label_text)
 
@@ -36,6 +36,7 @@ class LineEditWidget(BaseInputWidget):
 
 
 class ComboBoxWidget(BaseInputWidget):
+
     def __init__(self, label_text, *items):
         self.items = items
         super().__init__(label_text)
@@ -68,6 +69,7 @@ class ComboBoxWidget(BaseInputWidget):
 
 
 class CheckBoxWidget(BaseInputWidget):
+
     def __init__(self, label_text, item):
         super().__init__(label_text)
 
@@ -100,6 +102,7 @@ class CheckBoxWidget(BaseInputWidget):
 
 
 class MultiCheckBoxWidget(BaseInputWidget):
+
     def __init__(self, label_text, *items):
         super().__init__(label_text)
 
@@ -146,6 +149,7 @@ class MultiCheckBoxWidget(BaseInputWidget):
 
 
 class PlainTextEditWidget(BaseInputWidget):
+
     def __init__(self, label_text):
         super().__init__(label_text)
 

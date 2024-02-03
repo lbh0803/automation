@@ -1,4 +1,5 @@
 from functools import lru_cache
+import logging
 
 
 class DataModel:
@@ -33,7 +34,7 @@ class DataModel:
             try:
                 current_dict = current_dict[keys[idx]]
             except KeyError:
-                print(f"The {idx}th key {keys[idx]} is not in {self._name}")
+                logging.error(f"The {idx}th key {keys[idx]} is not in {self._name}")
                 raise
         return current_dict[keys[-1]]
 
