@@ -1,20 +1,25 @@
-from collections import defaultdict
 import logging
+from multiprocessing import Process
 import os
+import subprocess
 import threading
 import time
+from collections import defaultdict
 
 import pandas as pd
+
 from controller.utility import func_log
 from model.data import DataModel
-
 
 """
 This area is for custom functions.
 """
 
 
-TEMPLATES = {
+ADD_TEMPLATES = {
+    """
+    Template dictionary for add_config_data function
+    """
     "io_define": "{step}       {direction} {pin}; {{{signal}}}\n",
     "delete_pin": "{step}       DELETE_PINS {pin};\n",
     "bi_control": "{step}       BIDIRECT_CONTROL {pad} = OUTPUT WHEN {pin} = 1;{{{signal}}}\n",
@@ -22,9 +27,25 @@ TEMPLATES = {
     "alias_pin": "{step}       ALIAS {signal} = {pad};\n"
 }
 
+MERGE_TEMPLATES = {
+    """
+    Template dictionary for merge_config_data function
+    """
+    "pin_type": "{step}    {data}\n",
+    "io_define": "{step}    INPUTS {data};\n",
+    "more_info": "{step}    {data}\n",
+    "add_pin": "{step}    {data}\n",
+    "delete_pin": "{step}    {data}\n",
+    "mask_pin": "{step}    {data}\n",
+    "alias_pin": "{step}    {data}\n"
+}
+
 
 @func_log
 def make_base_info(*args, **kwargs):
+    """
+    This makes dataframe from dftmux excel sheet
+    """
     dftmux_excel = args[0]
     df = pd.read_excel(dftmux_excel, sheet_name=0, header=None)
     df = df.fillna("N/A")
@@ -36,8 +57,10 @@ def make_base_info(*args, **kwargs):
     return mode_info
 
 
-@func_log
 def get_mode_info(df, mode_info):
+    """
+    This makes base mode information from dataframe
+    """
     row_size, column_size = df.shape
     skip_list = ["SCAN", "BIST", "JTAG", "IO", "FAKE"]
     for c_idx in range(column_size):
@@ -87,15 +110,11 @@ def make_tb(*args, **kwargs):
 
 
 @func_log
-# def make_atp(eds_path):
-def make_atp(*args, **kwargs):
-    # print_dict(kwargs)
-    time.sleep(0.5)
-    pass
-
-
-@func_log
 def make_cfg(*args, **kwargs):
+    """
+    This function does refactoring data structure to make config/pin template
+    It executes make_templtates function using multithreading
+    """
     mode_base_info, basic_info_from_user = args[0], args[1]
     mode_info_from_user = DataModel("MODE")
     try:
@@ -119,7 +138,10 @@ def make_cfg(*args, **kwargs):
 
 
 def make_templates(mode_name, main_mode, merge_flag, mode_base_info, mode_info_from_user, basic_info_from_user, eds_path):
-    thread1 = threading.Thread(target = make_pin_template, args = (mode_name, main_mode, merge_flag, mode_base_info, mode_info_from_user, eds_path))
+    """
+    Makes thread for pin/config template respectively
+    """
+    thread1 = threading.Thread(target = make_pin_template, args = (mode_name, main_mode, merge_flag, mode_base_info, mode_info_from_user, basic_info_from_user, eds_path))
     thread2 = threading.Thread(target = make_config_template, args = (mode_name, main_mode, mode_info_from_user, basic_info_from_user, eds_path))
     thread1.start()
     thread2.start()
@@ -127,29 +149,25 @@ def make_templates(mode_name, main_mode, merge_flag, mode_base_info, mode_info_f
     thread2.join()
 
 
-def make_pin_template(mode_name,main_mode,merge_flag,mode_base_info,mode_info_from_user,eds_path,):
+def make_pin_template(mode_name, main_mode, merge_flag, mode_base_info, mode_info_from_user, basic_info_from_user, eds_path,):
+    """
+    This makes pin template file under $EDS/CFG
+    """
     config_data = defaultdict(list)
     mode_setting_pin = ["XTMODE", "XUWB_EN", "XUWB_WAKE", "XCAN_RX"]
     ieee_signal = ["WSI","SelectWIR","UpdateWIR","ShiftWR","CaptureWR","WRSTN","WRCK","WSO",]
-    if mode_name != main_mode:
-        new_name = main_mode + "_" + mode_name[10:]
-    else:
-        new_name = main_mode
     pad_list = mode_base_info.get_data(mode_name).keys()
-    for step, basic_info_from_user in mode_info_from_user.get_data(mode_name).items():
+    for step, step_info_from_user in mode_info_from_user.get_data(mode_name).items():
         step = step.lower()
-        more_info = basic_info_from_user["more_info"]
         if "vcd2" in step:
-            bidirection_control = basic_info_from_user["bidirection_control"]
-            cycle = basic_info_from_user["cycle"]
+            bidirection_control = step_info_from_user["bidirection_control"]
+            cycle = step_info_from_user["cycle"]
             config_data["pin_type"] += [
                 f"CYCLE = {cycle};\n\n{step}     PINTYPE NRZ * @ 0;\n",
                 f"{step}     PINTYPE STB * @ {float(cycle) * 0.9};\n",
             ]
-            pin_str_format = "{step}    {data}\n"
-            input_str_format = "{step}    INPUTS {data};\n"
-            merge_config_data(config_data, "pin_type", step, pin_str_format, basic_info_from_user["pin_type"])
-            merge_config_data(config_data, "io_define", step, input_str_format, mode_setting_pin)
+            merge_config_data(config_data, "pin_type", step,  step_info_from_user["pin_type"])
+            merge_config_data(config_data, "io_define", step, mode_setting_pin)
             if bidirection_control != "":
                 add_config_data(config_data,"io_define",step=step,direction="INPUTS",pin=bidirection_control,)
                 add_config_data(config_data, "delete_pin", step=step, pin=bidirection_control)
@@ -181,27 +199,35 @@ def make_pin_template(mode_name,main_mode,merge_flag,mode_base_info,mode_info_fr
                         add_config_data(config_data, "alias_pin", step=step, signal=ieee, pad=pad)
                         break
 
-        merge_config_data(config_data, "add_pin", step, pin_str_format, basic_info_from_user["add_pin"])
-        merge_config_data(config_data, "mask_pin", step, pin_str_format, basic_info_from_user["mask_pin"])
-        merge_config_data(config_data, "delete_pin", step, pin_str_format, basic_info_from_user["delete_pin"])
-        merge_config_data(config_data, "alias_pin", step, pin_str_format, basic_info_from_user["alias_pin"])
+        merge_config_data(config_data, "add_pin", step, step_info_from_user["add_pin"])
+        merge_config_data(config_data, "mask_pin", step, step_info_from_user["mask_pin"])
+        merge_config_data(config_data, "delete_pin", step, step_info_from_user["delete_pin"])
+        merge_config_data(config_data, "alias_pin", step, step_info_from_user["alias_pin"])
+
+    if mode_name != main_mode:
+        new_name = main_mode[10:] + "_" + mode_name[10:]
+    else:
+        new_name = main_mode[10:]
+        merge_config_data(config_data, "more_info", "merge2atp", basic_info_from_user["more_info"])
 
     write_list = (config_data["io_define"] + config_data["pin_type"] + config_data["bi_control"] + config_data["add_pin"]
-    + config_data["mask_pin"] + config_data["alias_pin"] + config_data["delete_pin"] + more_info)
+    + config_data["mask_pin"] + config_data["alias_pin"] + config_data["delete_pin"] + config_data["more_info"])
 
-    file_path = os.path.join(eds_path, "CFG", new_name[10:], "PIN_CONTROL.cfg")
+    file_path = os.path.join(eds_path, "CFG", new_name, "PIN_CONTROL.cfg")
     write_list_to_file(file_path, write_list)
 
 
-@func_log
 def make_config_template(mode_name, main_mode, mode_info_from_user, basic_info_from_user, eds_path):
+    """
+    This makes $mode.cfg file under $EDS/CFG
+    """
     config_data = []
     dev = basic_info_from_user.get_data("dev")
     config_data.append(f'HDL_REVISION   {dev}\n')
     if mode_name != main_mode:
-        new_name = main_mode + "_" + mode_name[10:]
+        new_name = main_mode[10:] + "_" + mode_name[10:]
     else:
-        new_name = main_mode
+        new_name = main_mode[10:]
         config_data.append(f'REPEAT_THRESHOLD   {basic_info_from_user.get_data("repeat")}\n')
     for step in mode_info_from_user.get_data(mode_name):
         if step == "VCD2WGL":
@@ -211,50 +237,122 @@ def make_config_template(mode_name, main_mode, mode_info_from_user, basic_info_f
     if mode_name == main_mode:
         cnt = 0
         main_vector = None
+        run_info = list()
         for mode in mode_info_from_user.data:
             if "VCD2WGL" in mode_info_from_user.get_data(mode):
                 cnt += 1
                 config_data.append(f"IP_TOP_WGL{cnt}    {eds_path}/OUTPUT/{mode}/{dev}/IP_TOP_WGL\n")
                 if mode_info_from_user.get_data(mode + ".VCD2WGL.main_step"):
                     main_vector = cnt
+                if mode != main_mode:
+                    run_info.append(f"vcd2wgl {main_mode[10:]}_{mode[10:]}\n")
+                else:
+                    run_info.append(f"vcd2wgl {main_mode[10:]}\n")
             if "WGL2WGL" in mode_info_from_user.get_data(mode):
                 cnt += 1
                 config_data.append(f"IP_TOP_WGL{cnt}    {eds_path}/OUTPUT/{mode}/{dev}/TESTMODE_WGL\n")
                 if mode_info_from_user.get_data(mode + ".WGL2WGL.main_step"):
                     main_vector = cnt
+                if mode != main_mode:
+                    run_info.append(f"wgl2wgl {main_mode[10:]}_{mode[10:]}\n")
+                else:
+                    run_info.append(f"wgl2wgl {main_mode[10:]}\n")
+        run_info.append(f"merge2atp {main_mode[10:]}\n")
+        file_path = os.path.join(eds_path, "CFG", mode_name[10:], "run_list.txt")
+        write_list_to_file(file_path, run_info)
+
         config_data.append(f"WGL_NUM    {cnt}\n")
         config_data.append(f"MAIN_WGL   {main_vector}\n")
-    file_path = os.path.join(eds_path, "CFG", new_name[10:], f"{new_name[10:]}.cfg")
+        config_data.append(f"EXPORT_DIR     {basic_info_from_user.get_data('export')}\n")
+    file_path = os.path.join(eds_path, "CFG", new_name, f"{new_name}.cfg")
     write_list_to_file(file_path, config_data)
 
 
-@func_log
-def merge_config_data(config_data, key, step, str_format, data_list):
+def merge_config_data(config_data, key, step, data_list):
+    """
+    This merges list data to config_data[key]
+    """
+    str_format = MERGE_TEMPLATES[key]
     config_data[key] += [str_format.format(step=step, data=data) for data in data_list if data != ""]
-    print(f"key : {key}, list : {config_data[key]}")
 
 
-@func_log
 def add_config_data(config_data, key, step=None, direction=None, pin=None, pad=None, signal=None):
+    """
+    This adds data to config_data[key]
+    """
     if key == "mask_pin":
         pad_condition = f'{pad}.O  @CONDITION' if pin else pad
         pin_condition = f'{pin} = 1' if pin else "@0, 9999999999"
-        str_format = TEMPLATES[key].format(step=step, pad_condition=pad_condition, pin_condition = pin_condition, signal=signal)
+        str_format = ADD_TEMPLATES[key].format(step=step, pad_condition=pad_condition, pin_condition = pin_condition, signal=signal)
     else:
-        str_format = TEMPLATES[key].format(step=step, direction=direction, pin=pin, signal=signal, pad=pad)
+        str_format = ADD_TEMPLATES[key].format(step=step, direction=direction, pin=pin, signal=signal, pad=pad)
     config_data[key].append(str_format)
-    print(f"key {key}, element : {str_format}, list: {config_data[key]}")
 
 
-@func_log
 def create_directory(file_path):
+    """
+    This makes directory path for file_path
+    """
     directory = os.path.dirname(file_path)
     if not os.path.exists(directory):
         os.makedirs(directory)
 
 
-@func_log
 def write_list_to_file(file_path, write_list):
+    """
+    Write list data to file_path
+    """
     create_directory(file_path)
     with open(file_path, "w") as wr:
         wr.write("".join(write_list))
+        
+
+@func_log
+def make_atp(*args, **kwargs):
+    """
+    Extract data from user input to make atp vector
+    """
+    basic_info_from_user = args[0]
+    eds_path = basic_info_from_user.get_data("eds_path")
+    main_mode = basic_info_from_user.get_data("main_mode")
+    file_path = os.path.join(eds_path, "CFG", main_mode, "run_list.txt")
+    with open(file_path, "r") as rd:
+        lines = rd.readlines()
+    run_vtran(lines)
+
+
+def run_vtran(run_list):
+    """
+    Run vtran script based on multiprocessing
+    """
+    processes = list()
+    for line in run_list[:-1]:
+        step, target = line.split()
+        command = f"make {step}"
+        #need multi line?
+        input_data = f"""\
+        {target}
+        """
+        process = Process(target=run_command, args=(command, input_data))
+        processes.append(process)
+        process.start()
+    for process in processes:
+        process.join()
+    line = run_list[-1]
+    step, target = line.split()
+    command = f"make {step}"
+    input_data = f"""\
+    {target}
+    """
+    run_command(command, input_data)   
+     
+    
+def run_command(command, input_data):
+    """
+    Execute linux command using subprocess module
+    """
+    print(f"command : {command}, input : {input_data}")
+    process = subprocess.Popen(command.split() , stdin=subprocess.PIPE, universal_newlines=True)
+    process.communicate(input=input_data)
+
+
