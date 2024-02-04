@@ -1,8 +1,8 @@
 from collections import namedtuple
 
 from model.data import Query
-from view.ui_widget import (CheckBoxWidget, ComboBoxWidget, LineEditWidget, MultiCheckBoxWidget,
-                            PlainTextEditWidget)
+from view.ui_widget import (CheckBoxWidget, ComboBoxWidget, DirPathWidget, FilePathWidget,
+                            LineEditWidget, MultiCheckBoxWidget, PlainTextEditWidget)
 
 JOB_A = "A> Make TESTMODE TB\n => DFTMUX connection check\n => PAD <-> IP"
 JOB_B = "B> Make VECTOR CFG File\n => Setup stage before making VECTOR"
@@ -27,7 +27,7 @@ def construct_base_query():
     base.set_query(
         0,
         "dftmux_xls",
-        LineEditWidget,
+        FilePathWidget,
         ">> Base Information - DFTMUX Info Excel\nex) /USER/DFT/DFTMUX.xlsx",
     )
 
@@ -39,22 +39,22 @@ def construct_a_query(base_info):
     jobA.set_query(
         0,
         "signal_xls",
-        LineEditWidget,
-        ">> Testmode Singal Info Excel>\nIf not exists put 'N'\nex)/USER/DFT/SIGNAL_INFO.xlsx",
+        FilePathWidget,
+        ">> Testmode Singal Info Excel>\n>> If not exists put 'N'\nex)/USER/DFT/SIGNAL_INFO.xlsx",
     )
 
     jobA.set_query(
         0,
         "tb_path",
         LineEditWidget,
-        ">>Testbench path\nex) /USER/DFT/TB.sv",
+        ">> Testbench path\nex) /USER/DFT/TB.sv",
     )
     return jobA
 
 
 def construct_b_query(base_info):
     jobB = Query(repeat=2)
-    jobB.set_query(0, "eds_path", LineEditWidget, ">> EDS Working Directory\nex) /USER/EDS")
+    jobB.set_query(0, "eds_path", DirPathWidget, ">> EDS Working Directory\nex) /USER/EDS")
 
     jobB.set_query(
         1,
@@ -74,7 +74,7 @@ def construct_b_query(base_info):
     jobB.set_query(2, "step", ComboBoxWidget, ">> Run Step", "VCD2WGL", "VCD2ATP", "WGL2WGL")
     jobB.set_query(2, "main_step", CheckBoxWidget, ">> Main Step?\n>> It determines vector name",
                    "Y")
-    jobB.set_query(2, "path", LineEditWidget, ">> Source File Directory\nex) /USER/SRC")
+    jobB.set_query(2, "src_path", DirPathWidget, ">> Source File Directory\nex) /USER/SRC")
     jobB.set_query(
         2,
         "add_pin",
@@ -113,11 +113,11 @@ def construct_b_query(base_info):
     )
     jobB.set_query(2, "bidirection_control", LineEditWidget, ">> Bidirection Control Signal")
     jobB.set_query(2, "last", CheckBoxWidget,
-                   ">> Is last? \n>> If it is the last sequence, check this", "Y")
+                   ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n>> Is last? \n>> If it is the last sequence, check this", "Y")
 
     jobB.set_query(3, "repeat", LineEditWidget, ">> Repeat Threshold,\nex) 2")
     jobB.set_query(3, "dev", LineEditWidget, ">> DEV Step,\nex) EVT0_ML3_DEV00")
-    jobB.set_query(3, "export", LineEditWidget, ">> Export Directory,\nex) /USER/EDS/EXPORT")
+    jobB.set_query(3, "export", DirPathWidget, ">> Export Directory,\nex) /USER/EDS/EXPORT")
     jobB.set_query(
         3,
         "more_info",
@@ -130,6 +130,6 @@ def construct_b_query(base_info):
 
 def construct_c_query(base_info):
     jobC = Query()
-    jobC.set_query(0, "eds_path", LineEditWidget, ">> EDS Working Path\nex) /USER/EDS")
-    jobC.set_query(1, "main_mode", ComboBoxWidget, ">> Target Mode", *base_info.data.keys())
+    jobC.set_query(0, "eds_path", DirPathWidget, ">> EDS Working Path\nex) /USER/EDS")
+    jobC.set_query(1, "mode_list", MultiCheckBoxWidget, ">> Target Mode", *base_info.data.keys())
     return jobC

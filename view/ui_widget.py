@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
-from PyQt5.QtWidgets import (QCheckBox, QComboBox, QLineEdit, QPlainTextEdit, QVBoxLayout)
+from PyQt5.QtWidgets import (QFileDialog, QPushButton, QCheckBox, QComboBox, QLineEdit,
+                             QPlainTextEdit, QVBoxLayout)
 
 from view.ui_interface import BaseInputWidget
 
@@ -175,5 +176,53 @@ class PlainTextEditWidget(BaseInputWidget):
     def __deepcopy__(self, memo):
         new_widget = PlainTextEditWidget(self.label.text())
         new_widget.line_edit.setPlainText(self.line_edit.toPlainText())
+        memo[id(self)] = new_widget
+        return new_widget
+
+
+class DirPathWidget(LineEditWidget):
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+
+        self.find_button = QPushButton("Find Dir")
+        self.find_button.clicked.connect(self.open_dir_finder)
+        self.layout.addWidget(self.find_button)
+
+    def open_dir_finder(self):
+        options = QFileDialog.Options()
+        directory = QFileDialog.getExistingDirectory(self, "Select Dir", "", options=options)
+        if directory:
+            self.line_edit.setText(directory)
+
+    def __deepcopy__(self, memo):
+        new_widget = DirPathWidget(self.label.text())
+        new_widget.line_edit.setText(self.line_edit.text())
+        memo[id(self)] = new_widget
+        return new_widget
+
+
+class FilePathWidget(LineEditWidget):
+
+    def __init__(self, label_text):
+        super().__init__(label_text)
+
+        self.find_button = QPushButton("Find File")
+        self.find_button.clicked.connect(self.open_file_finder)
+        self.layout.addWidget(self.find_button)
+
+    def open_file_finder(self):
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(self,
+                                                   "Select File",
+                                                   "",
+                                                   "Excel Files (*.xlsx)",
+                                                   options=options)
+        if file_name:
+            self.line_edit.setText(file_name)
+
+    def __deepcopy__(self, memo):
+        new_widget = FilePathWidget(self.label.text())
+        new_widget.line_edit.setText(self.line_edit.text())
         memo[id(self)] = new_widget
         return new_widget
