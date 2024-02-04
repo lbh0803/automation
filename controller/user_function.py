@@ -1,15 +1,16 @@
 import logging
-from multiprocessing import Process
 import os
 import subprocess
 import threading
 import time
 from collections import defaultdict
+from multiprocessing import Process
 
 import pandas as pd
 
 from controller.utility import func_log
 from model.data import DataModel
+
 """
 This area is for custom functions.
 """

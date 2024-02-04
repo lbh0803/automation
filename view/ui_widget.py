@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from PyQt5.QtWidgets import (QFileDialog, QPushButton, QCheckBox, QComboBox, QLineEdit,
-                             QPlainTextEdit, QVBoxLayout)
+from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QLineEdit,
+                             QPlainTextEdit, QPushButton, QVBoxLayout)
 
 from view.ui_interface import BaseInputWidget
 

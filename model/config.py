@@ -1,8 +1,9 @@
 from collections import namedtuple
 
 from model.data import Query
-from view.ui_widget import (CheckBoxWidget, ComboBoxWidget, DirPathWidget, FilePathWidget,
-                            LineEditWidget, MultiCheckBoxWidget, PlainTextEditWidget)
+from view.ui_widget import (CheckBoxWidget, ComboBoxWidget, DirPathWidget,
+                            FilePathWidget, LineEditWidget,
+                            MultiCheckBoxWidget, PlainTextEditWidget)
 
 JOB_A = "A> Make TESTMODE TB\n => DFTMUX connection check\n => PAD <-> IP"
 JOB_B = "B> Make VECTOR CFG File\n => Setup stage before making VECTOR"

@@ -4,7 +4,8 @@ from functools import partial
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QHBoxLayout, QScrollArea, QVBoxLayout, QWidget
 
-from controller.controller import (ButtonManager, DataManager, ExecuteManager, NavigatorManager)
+from controller.controller import (ButtonManager, DataManager, ExecuteManager,
+                                   NavigatorManager)
 from controller.user_function import make_base_info
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
