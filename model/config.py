@@ -36,13 +36,13 @@ def construct_base_query():
 
 def construct_a_query(base_info):
     jobA = Query()
+    jobA.set_query(0, "todo_list", MultiCheckBoxWidget, ">> Items To Be Included", "DFTMUX CONNECTION", "TEST MODE SINGAL")
     jobA.set_query(
         0,
         "signal_xls",
         FilePathWidget,
-        ">> Testmode Singal Info Excel>\n>> If not exists put 'N'\nex)/USER/DFT/SIGNAL_INFO.xlsx",
+        ">> Testmode Singal Info Excel>\n>> Only need when you checked 'TEST MODE SIGNAL'\nex) /USER/DFT/SIGNAL_INFO.xlsx",
     )
-
     jobA.set_query(
         0,
         "tb_path",

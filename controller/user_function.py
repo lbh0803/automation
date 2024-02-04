@@ -44,7 +44,7 @@ def make_base_info(*args, **kwargs):
     """
     dftmux_excel = args[0]
     df = pd.read_excel(dftmux_excel, sheet_name=0, header=None)
-    df = df.fillna("N/A")
+    df.fillna("N/A", inplace=True)
     idx = (df != "N/A").any(axis=1).idxmax()
     df = df.iloc[idx:]
     mode_info = DataModel("BASE")
@@ -98,6 +98,10 @@ def make_tmode_info(*args, **kwargs):
 @func_log
 def make_tb(*args, **kwargs):
     time.sleep(0.5)
+    pass
+
+
+def make_signal_info():
     pass
 
 
