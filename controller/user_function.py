@@ -152,15 +152,8 @@ def make_templates(mode_name, main_mode, merge_flag, mode_base_info, mode_info_f
     thread2.join()
 
 
-def make_pin_template(
-    mode_name,
-    main_mode,
-    merge_flag,
-    mode_base_info,
-    mode_info_from_user,
-    basic_info_from_user,
-    eds_path,
-):
+def make_pin_template(mode_name, main_mode, merge_flag, mode_base_info, mode_info_from_user, 
+                      basic_info_from_user, eds_path):
     """
     This makes pin template file under $EDS/CFG
     """
