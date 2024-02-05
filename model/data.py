@@ -103,17 +103,19 @@ class Query:
         self.query[key][var] = obj
 
     def up_cnt(self):
-        if not self.is_last():
-            if not self.is_repeat_type() or self._repeat_break:
-                self._cnt += 1
-                self._repeat_cnt = 1
-            elif self.is_repeat_type():
-                self._repeat_cnt += 1
+        """
+        Next button is blocked when it is last window
+        """
+        if not self.is_repeat_type() or self._repeat_break:
+            self._cnt += 1
+            self._repeat_cnt = 1
         else:
             self._repeat_cnt += 1
 
     def down_cnt(self):
-        # self.set_repeat_break(False)
+        """
+        Back button doesn't exist when it is first window
+        """
         if self._repeat_cnt > 1:
             self._repeat_cnt -= 1
         elif not self.is_first():
