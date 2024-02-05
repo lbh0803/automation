@@ -66,7 +66,7 @@ class BaseInputWindow(QWidget):
         msg.setWindowTitle("Message")
         msg.setText("Are you sure you want to quit?")
 
-        font = QFont("Bookman Old Style", 15, QFont.Bold)
+        font = QFont("Bookman Old Style", 12, QFont.Bold)
         msg.setFont(font)
 
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)

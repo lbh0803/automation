@@ -106,6 +106,9 @@ class Query:
         if not self.is_last():
             if not self.is_repeat_type() or self._repeat_break:
                 self._cnt += 1
+                self._repeat_cnt = 1
+            elif self.is_repeat_type():
+                self._repeat_cnt += 1
         else:
             self._repeat_cnt += 1
 
@@ -115,6 +118,7 @@ class Query:
             self._repeat_cnt -= 1
         elif not self.is_first():
             self._cnt -= 1
+            self._repeat = 1
 
     def is_repeat_type(self):
         """

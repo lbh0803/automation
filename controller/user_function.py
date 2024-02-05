@@ -48,13 +48,13 @@ def make_base_info(*args, **kwargs):
     df.fillna("N/A", inplace=True)
     idx = (df != "N/A").any(axis=1).idxmax()
     df = df.iloc[idx:]
-    mode_info = DataModel("BASE")
-    get_mode_info(df, mode_info)
+    mode_info = DataModel("BASE") #$mode_name.$pad_name.sinal/direction/hierarchy
+    make_mode_info(df, mode_info)
     mode_info.show_all()
     return mode_info
 
 
-def get_mode_info(df, mode_info):
+def make_mode_info(df, mode_info):
     """
     This makes base mode information from dataframe
     """
@@ -91,19 +91,19 @@ def get_mode_info(df, mode_info):
 
 
 @func_log
-def make_tmode_info(*args, **kwargs):
-    time.sleep(0.5)
-    pass
-
-
-@func_log
 def make_tb(*args, **kwargs):
     time.sleep(0.5)
     pass
 
 
-def make_signal_info():
-    pass
+def make_signal_info(signal_excel):
+    df = pd.read_excel(signal_excel, sheet_name = 0, header=None)
+    df.fillna("N/A", inplace=True)
+    idx = (df != "N/A").any(axis=1).idxmax()
+    df = df.iloc[idx:]
+    signal_info = DataModel("SIGNAL") #$mode_name.$signal_name.value
+    path_info = DataModel("")
+    row_size, column_size = df.shape
 
 
 @func_log
@@ -169,7 +169,8 @@ def make_pin_template(mode_name, main_mode, merge_flag, mode_base_info, mode_inf
             bidirection_control = step_info_from_user["bidirection_control"]
             cycle = step_info_from_user["cycle"]
             config_data["pin_type"] += [
-                f"CYCLE = {cycle};\n\n{step}     PINTYPE NRZ * @ 0;\n",
+                f"{step}     CYCLE = {cycle};\n",
+                f"{step}     PINTYPE NRZ * @ 0;\n",
                 f"{step}     PINTYPE STB * @ {float(cycle) * 0.9};\n",
             ]
             merge_config_data(config_data, "pin_type", step, step_info_from_user["pin_type"])
@@ -262,26 +263,24 @@ def make_config_template(mode_name, main_mode, mode_info_from_user, basic_info_f
         main_vector = None
         run_info = list()
         for mode in mode_info_from_user.data:
+            if mode == main_mode:
+                sub_name = main_mode[10:]
+            else:
+                sub_name = main_mode[10:] + "_" + mode[10:]
             if "VCD2WGL" in mode_info_from_user.get_data(mode):
                 cnt += 1
                 config_data.append(
-                    f"IP_TOP_WGL{cnt}    {eds_path}/OUTPUT/{mode[10:]}/{dev}/IP_TOP_WGL\n")
+                    f"IP_TOP_WGL{cnt}_SOURCE    {eds_path}/OUTPUT/{sub_name}/{dev}/TESTMODE_WGL\n")
+                run_info.append(f"vcd2wgl {sub_name}\n")
                 if mode_info_from_user.get_data(mode + ".VCD2WGL.main_step"):
                     main_vector = cnt
-                if mode != main_mode:
-                    run_info.append(f"vcd2wgl {main_mode[10:]}_{mode[10:]}\n")
-                else:
-                    run_info.append(f"vcd2wgl {main_mode[10:]}\n")
             if "WGL2WGL" in mode_info_from_user.get_data(mode):
                 cnt += 1
                 config_data.append(
-                    f"IP_TOP_WGL{cnt}    {eds_path}/OUTPUT/{mode[10:]}/{dev}/TESTMODE_WGL\n")
+                    f"IP_TOP_WGL{cnt}_SOURCE    {eds_path}/OUTPUT/{sub_name}/{dev}/IP_TOP_WGL\n")
+                run_info.append(f"wgl2wgl {sub_name}\n")
                 if mode_info_from_user.get_data(mode + ".WGL2WGL.main_step"):
                     main_vector = cnt
-                if mode != main_mode:
-                    run_info.append(f"wgl2wgl {main_mode[10:]}_{mode[10:]}\n")
-                else:
-                    run_info.append(f"wgl2wgl {main_mode[10:]}\n")
         run_info.append(f"merge2atp {main_mode[10:]}\n")
         file_path = os.path.join(eds_path, "CFG", mode_name[10:], "run_list.txt")
         write_list_to_file(file_path, run_info)
@@ -329,7 +328,7 @@ def create_directory(file_path):
     """
     directory = os.path.dirname(file_path)
     if not os.path.exists(directory):
-        os.makedirs(directory)
+        os.makedirs(directory, exist_ok=True)
 
 
 def write_list_to_file(file_path, write_list):
