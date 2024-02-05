@@ -118,7 +118,7 @@ class Query:
         """
         if self._repeat_cnt > 1:
             self._repeat_cnt -= 1
-        elif not self.is_first():
+        else:
             self._cnt -= 1
             self._repeat = 1
 
