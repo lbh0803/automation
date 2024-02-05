@@ -1,8 +1,9 @@
 import logging
 from functools import partial
 
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QHBoxLayout, QScrollArea, QVBoxLayout, QWidget
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QPixmap
+from PyQt5.QtWidgets import QLabel, QHBoxLayout, QScrollArea, QVBoxLayout, QWidget
 
 from controller.controller import (ButtonManager, DataManager, ExecuteManager,
                                    NavigatorManager)
@@ -27,12 +28,16 @@ class JobSelectWindow(BaseInputWindow):
         self.init_ui()
 
     def init_ui(self):
+        self.img_label = QLabel()
+        self.pixmap = QPixmap("C:\\Users\\82108\\Desktop\\DFT")
+        self.pixmap = self.pixmap.scaled(self.width(), self.height(), Qt.KeepAspectRatio)
+        self.img_label.setPixmap(self.pixmap)
+        
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
 
         self.container = QWidget()
         self.container_layout = QVBoxLayout()
-        # self.container_layout.setSpacing(100)
 
         self.layout = QVBoxLayout(self)
         self.font = QFont("Bookman Old Style", 12, QFont.Bold)
@@ -50,6 +55,7 @@ class JobSelectWindow(BaseInputWindow):
         self.container_layout.addLayout(self.button_layout)
         self.container.setLayout(self.container_layout)
         self.scroll_area.setWidget(self.container)
+        self.layout.addWidget(self.img_label)
         self.layout.addWidget(self.scroll_area)
 
         self.setLayout(self.layout)
