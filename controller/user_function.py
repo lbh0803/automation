@@ -351,11 +351,12 @@ def make_atp(*args, **kwargs):
     threads = list()
     for mode_name in mode_list:
         file_path = os.path.join(eds_path, "CFG", mode_name[10:], "run_list.txt")
-        thread = threading.Thread(target=run_vtran, args=(file_path))
+        thread = threading.Thread(target=run_vtran, args=(file_path,))
         threads.append(thread)
         thread.start()
     for thread in threads:
         thread.join()
+    logging.info("All completed!")
         
 
 def run_vtran(file_path):

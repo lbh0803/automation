@@ -65,9 +65,15 @@ class JobSelectWindow(BaseInputWindow):
         self.current_job = self.data_manager.get_widget(0).get_value()
         base_info_input = [
             self.data_manager.get_widget(idx).get_value()
-            for idx in range(1, self.data_manager.widget_number)
+            for idx in range(1, self.data_manager.widget_number) 
+            if self.data_manager.get_widget(idx).get_value() != ""
         ]
-        self.base_info = make_base_info(*base_info_input)
+        print(f"base_info_input : {base_info_input}")
+        if len(base_info_input):
+            self.base_info = make_base_info(*base_info_input)
+        else:
+            logging.warning("Base information is skipped!")
+            self.base_info = DataModel("BASE")
         self.next_query = self.data_manager.info.get_data(self.current_job).query_func(
             self.base_info)
         self.next_func = self.data_manager.info.get_data(self.current_job).execute_func

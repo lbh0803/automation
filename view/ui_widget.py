@@ -44,6 +44,7 @@ class ComboBoxWidget(BaseInputWidget):
 
         self.combo_box = QComboBox(self)
         self.combo_box.addItems(self.items)
+        self.combo_box.setMinimumHeight(80)
 
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.label)

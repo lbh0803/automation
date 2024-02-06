@@ -1,3 +1,4 @@
+from collections import defaultdict
 import logging
 from functools import lru_cache
 
@@ -72,11 +73,11 @@ class Query:
     This is special class for input query.
     """
 
-    def __init__(self, repeat=None):
+    def __init__(self):
         self._query = dict()
         self._cnt = 0
-        self._repeat = repeat
-        self._repeat_cnt = 1
+        self._repeat = defaultdict(bool)
+        self._repeat_cnt = defaultdict(int)
         self._repeat_break = False
 
     @property
@@ -96,11 +97,13 @@ class Query:
             raise Exception(f"No dictionary for cnt {self._cnt} has been assigned")
         return result
 
-    def set_query(self, key, var, BaseInputWidget, *args):
+    def set_query(self, repeat, cnt, var, BaseInputWidget, *args):
         obj = BaseInputWidget(*args)
-        if not self.query.get(key):
-            self.query[key] = dict()
-        self.query[key][var] = obj
+        if not self.query.get(cnt):
+            self.query[cnt] = dict()
+        self.query[cnt][var] = obj
+        self._repeat[cnt] = repeat
+        self._repeat_cnt[cnt] = 1
 
     def up_cnt(self):
         """
@@ -108,19 +111,17 @@ class Query:
         """
         if not self.is_repeat_type() or self._repeat_break:
             self._cnt += 1
-            self._repeat_cnt = 1
         else:
-            self._repeat_cnt += 1
+            self._repeat_cnt[self._cnt] += 1
 
     def down_cnt(self):
         """
         Back button doesn't exist when it is first window
         """
-        if self._repeat_cnt > 1:
-            self._repeat_cnt -= 1
+        if self._repeat_cnt[self._cnt] > 1:
+            self._repeat_cnt[self._cnt] -= 1
         else:
             self._cnt -= 1
-            self._repeat = 1
 
     def is_repeat_type(self):
         """
@@ -128,7 +129,7 @@ class Query:
         You should use repeat type.
         ex) Get test mode information sequentially
         """
-        return self._cnt == self._repeat
+        return self._repeat[self._cnt]
 
     def set_repeat_break(self, value):
         self._repeat_break = value
