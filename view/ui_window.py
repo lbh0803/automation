@@ -29,7 +29,7 @@ class JobSelectWindow(BaseInputWindow):
 
     def init_ui(self):
         self.img_label = QLabel()
-        self.pixmap = QPixmap("C:\\Users\\82108\\Desktop\\DFT")
+        self.pixmap = QPixmap("logo.png")
         self.pixmap = self.pixmap.scaled(self.width(), self.height(), Qt.KeepAspectRatio)
         self.img_label.setPixmap(self.pixmap)
         
@@ -112,6 +112,11 @@ class InputWindow(BaseInputWindow):
         self.init_ui()
 
     def init_ui(self):
+        self.img_label = QLabel()
+        self.pixmap = QPixmap("logo.png")
+        self.pixmap = self.pixmap.scaled(self.width(), self.height(), Qt.KeepAspectRatio)
+        self.img_label.setPixmap(self.pixmap)
+        
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
 
@@ -143,6 +148,7 @@ class InputWindow(BaseInputWindow):
         self.container_layout.addLayout(self.button_layout)
         self.container.setLayout(self.container_layout)
         self.scroll_area.setWidget(self.container)
+        self.layout.addWidget(self.img_label)
         self.layout.addWidget(self.scroll_area)
         self.setLayout(self.layout)
         self.show()
