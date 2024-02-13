@@ -1,5 +1,6 @@
 from abc import abstractmethod
 
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QLabel, QMessageBox, QWidget
 
@@ -44,6 +45,7 @@ class BaseInputWindow(QWidget):
     @abstractmethod
     def __init__(self):
         super().__init__()
+        self.center()
         pass
 
     @abstractmethod
@@ -57,6 +59,12 @@ class BaseInputWindow(QWidget):
     @abstractmethod
     def show_next_window(self):
         pass
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QCoreApplication.instance().primaryScreen().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
     def closeEvent(self, event):
         """

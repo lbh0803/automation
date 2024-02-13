@@ -2,7 +2,9 @@ import logging
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
-from PyQt5.QtWidgets import QLabel, QHBoxLayout, QScrollArea, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QScrollArea, QVBoxLayout,
+                             QWidget)
+
 from controller.controller import (ButtonManager, DataManager, ExecuteManager,
                                    NavigatorManager)
 from controller.user_function import make_base_info
@@ -23,7 +25,6 @@ class JobSelectWindow(BaseInputWindow):
         self.data_manager = DataManager(query, info)
         self.navi_manager = NavigatorManager()
         self.execute_manager = ExecuteManager(make_base_info, self)
-        # self.execute_manager = ExecuteManager(test_function, self)
         self.init_ui()
 
     def init_ui(self):

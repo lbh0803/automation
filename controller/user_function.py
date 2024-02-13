@@ -38,15 +38,6 @@ MERGE_TEMPLATES = {
 }
 
 
-def test_function(*args, **kwargs):
-    print("Test function")
-    callback = kwargs.get("callback", None)
-    for _ in range(10):
-        time.sleep(1)
-        callback(10)
-    print("Done")
-
-
 @func_log
 def make_base_info(*args, **kwargs):
     """

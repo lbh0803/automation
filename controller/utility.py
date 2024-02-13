@@ -1,10 +1,9 @@
 import logging
 import time
 
-from PyQt5.QtCore import QThread, pyqtSignal, QObject, QRunnable, pyqtSlot
+from PyQt5.QtCore import QObject, QRunnable, QThread, pyqtSignal, pyqtSlot
 
 from model.data import DataModel
-
 
 
 class WorkerSignals(QObject):

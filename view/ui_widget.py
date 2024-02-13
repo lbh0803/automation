@@ -1,10 +1,12 @@
-from abc import abstractmethod
 import logging
 import threading
+from abc import abstractmethod
 
-from PyQt5.QtWidgets import (QProgressBar, QWidget, QCheckBox, QComboBox, QFileDialog, QLineEdit,
-                             QPlainTextEdit, QPushButton, QVBoxLayout)
 from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QLineEdit,
+                             QPlainTextEdit, QProgressBar, QPushButton,
+                             QVBoxLayout, QWidget)
+
 from view.ui_interface import BaseInputWidget
 
 
