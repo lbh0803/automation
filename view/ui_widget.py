@@ -68,13 +68,24 @@ class LineEditWidget(BaseInputWidget):
         return new_widget
 
 
+class CustomComboBox(QComboBox):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def wheelEvent(self, event):
+        if not self.view().isVisible():
+            event.ignore()
+        else:
+            super().wheelEvent(event)
+
+
 class ComboBoxWidget(BaseInputWidget):
 
     def __init__(self, label_text, *items):
         self.items = items
         super().__init__(label_text)
 
-        self.combo_box = QComboBox(self)
+        self.combo_box = CustomComboBox(self)
         self.combo_box.addItems(self.items)
         self.combo_box.setMinimumHeight(80)
 
