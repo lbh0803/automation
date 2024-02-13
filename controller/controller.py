@@ -3,9 +3,11 @@ import logging
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QMessageBox, QPushButton
+from PyQt5.QtCore import QThreadPool
 
-from controller.utility import WorkerThread
+from controller.utility import Worker, WorkerSignals, WorkerThread, func_log
 from model.data import DataModel
+from view.ui_widget import ProgressBar
 
 
 class ButtonManager:
@@ -142,20 +144,31 @@ class ExecuteManager:
         self.func = func
         self._parent = parent
 
+    @func_log
     def execute_function(self, *args, **kwargs):
+        self.progressbar = ProgressBar()
+        self.kwargs = kwargs
+        self.progressbar.show()
         self.worker_thread = WorkerThread(self.func, *args, **kwargs)
-        self.worker_thread.finished.connect(self.handle_result)
+        self.worker_thread.finished.connect(self._handle_result)
+        self.worker_thread.updated.connect(self._udpate_progress)
         self.worker_thread.start()
 
-    def handle_result(self, result):
+    def _udpate_progress(self, value):
+        self.progressbar.update_progress(value)
+
+    def _handle_result(self, result):
         if result:
             self.show_msgbox("Complete!")
         else:
             self.show_msgbox("Fail!")
+        if "callback" in self.kwargs:
+            self.kwargs["callback"]()
 
     def show_msgbox(self, text):
         self.msg = QMessageBox(self._parent)
         font = QFont("Bookman Old Style", 15, QFont.Bold)
         self.msg.setFont(font)
         self.msg.setText(text)
+        self.msg.buttonClicked.connect(self.progressbar.close)
         self.msg.show()

@@ -8,7 +8,7 @@ from multiprocessing import Process
 
 import pandas as pd
 
-from controller.utility import func_log
+from controller.utility import func_log, monitor_thread
 from model.data import DataModel
 
 """
@@ -38,29 +38,45 @@ MERGE_TEMPLATES = {
 }
 
 
+def test_function(*args, **kwargs):
+    print("Test function")
+    callback = kwargs.get("callback", None)
+    for _ in range(10):
+        time.sleep(1)
+        callback(10)
+    print("Done")
+
+
 @func_log
 def make_base_info(*args, **kwargs):
     """
     This makes dataframe from dftmux excel sheet
     """
-    dftmux_excel = args[0]
-    df = pd.read_excel(dftmux_excel, sheet_name=0, header=None)
-    df.fillna("N/A", inplace=True)
-    idx = (df != "N/A").any(axis=1).idxmax()
-    df = df.iloc[idx:]
-    mode_info = DataModel("BASE") #$mode_name.$pad_name.sinal/direction/hierarchy
-    make_mode_info(df, mode_info)
-    mode_info.show_all()
-    return mode_info
+    # dftmux_excel = args[0]
+    df = args[0]
+    try:
+        # df = pd.read_excel(dftmux_excel, sheet_name=0, header=None)
+        # df.fillna("N/A", inplace=True)
+        # idx = (df != "N/A").any(axis=1).idxmax()
+        # df = df.iloc[idx:]
+        callback = kwargs.get("callback", None)
+        base_info = kwargs.get("base_info", None)
+        make_mode_info(df, base_info, callback)
+        base_info.show_all()
+        print("Get Dataframe, Success!")
+    except Exception as e:
+        logging.error(f"Error occured while making base_info: {e}")
 
 
-def make_mode_info(df, mode_info):
+def make_mode_info(df, mode_info, callback):
     """
     This makes base mode information from dataframe
     """
     row_size, column_size = df.shape
     skip_list = ["SCAN", "BIST", "JTAG", "IO", "FAKE"]
     for c_idx in range(column_size):
+        callback(10000 / (column_size-1))
+        # time.sleep(0.3)
         if "TEST_MODE" not in df.iloc[0, c_idx]:
             continue
         skip = 0
@@ -122,18 +138,23 @@ def make_cfg(*args, **kwargs):
         logging.error("No mode informaion")
     main_mode = basic_info_from_user.get_data("main_mode")
     eds_path = basic_info_from_user.get_data("eds_path")
+    callback = kwargs.get("callback", None)
     if main_mode not in mode_info_from_user.data:
         logging.error(f"main mode {main_mode} not in selected mode list")
     merge_flag = len(mode_info_from_user.data) > 1
     threads = list()
+    add_value = 100 / len(mode_info_from_user.data) * 2
     for mode_name in mode_info_from_user.data:
         thread = threading.Thread(target=make_templates,
                                   args=(mode_name, main_mode, merge_flag, mode_base_info,
-                                        mode_info_from_user, basic_info_from_user, eds_path))
-        threads.append(thread)
+                                        mode_info_from_user, basic_info_from_user, eds_path,))
+        monitor = threading.Thread(target=monitor_thread,
+                                   args=(thread, callback, add_value))
+        threads.append(monitor)
         thread.start()
-    for thread in threads:
-        thread.join()
+        monitor.start()
+    for monitor in threads:
+        monitor.join()
 
 
 def make_templates(mode_name, main_mode, merge_flag, mode_base_info, mode_info_from_user,
@@ -267,6 +288,8 @@ def make_config_template(mode_name, main_mode, mode_info_from_user, basic_info_f
                 sub_name = main_mode[10:]
             else:
                 sub_name = main_mode[10:] + "_" + mode[10:]
+            run_info.append(f"clean {sub_name}\n")
+            run_info.append(f"setup {sub_name}\n")
             if "VCD2WGL" in mode_info_from_user.get_data(mode):
                 cnt += 1
                 config_data.append(

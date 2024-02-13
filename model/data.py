@@ -133,6 +133,7 @@ class Query:
 
     def set_repeat_break(self, value):
         self._repeat_break = value
+        logging.info(f"Repeat break is called break : {self._repeat_break}, go to next step")
 
     def is_last(self):
         if self._cnt == len(self.query) - 1:

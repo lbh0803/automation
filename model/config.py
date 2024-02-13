@@ -5,7 +5,7 @@ from view.ui_widget import (CheckBoxWidget, ComboBoxWidget, DirPathWidget,
                             FilePathWidget, LineEditWidget,
                             MultiCheckBoxWidget, PlainTextEditWidget)
 
-JOB_A = "A> Make TESTMODE TB\n => DFTMUX connection check\n => PAD <-> IP"
+JOB_A = "A> Make TESTMODE TB\n => DFTMUX connection check (PAD <-> IP)\n => UDS SIGNAL"
 JOB_B = "B> Make VECTOR CFG File\n => Setup stage before making VECTOR"
 JOB_C = "C> Make VECTOR\n => ATP/PAT type are supported"
 
@@ -39,13 +39,13 @@ def construct_base_query():
 
 def construct_a_query(base_info):
     jobA = Query()
-    jobA.set_query(False, 0, "todo_list", MultiCheckBoxWidget, ">> Items To Be Included", "DFTMUX CONNECTION", "TEST MODE SINGAL")
+    jobA.set_query(False, 0, "todo_list", MultiCheckBoxWidget, ">> Items To Be Included", "DFTMUX CONNECTION", "UDS SIGNAL")
     jobA.set_query(
         False,
         0,
         "signal_xls",
         FilePathWidget,
-        ">> Testmode Singal Info Excel>\n>> Only need when you checked 'TEST MODE SIGNAL'\nex) /USER/DFT/SIGNAL_INFO.xlsx",
+        ">> Testmode Singal Info Excel>\n>> Only need when you checked 'UDS SIGNAL'\nex) /USER/DFT/SIGNAL_INFO.xlsx",
     )
     jobA.set_query(
         False,

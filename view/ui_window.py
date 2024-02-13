@@ -1,16 +1,18 @@
 import logging
 from functools import partial
+import time
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QLabel, QHBoxLayout, QScrollArea, QVBoxLayout, QWidget
+import pandas as pd
 
 from controller.controller import (ButtonManager, DataManager, ExecuteManager,
                                    NavigatorManager)
-from controller.user_function import make_base_info
+from controller.user_function import make_base_info, test_function
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
-from view.ui_widget import CheckBoxWidget
+from view.ui_widget import CheckBoxWidget, ProgressBar
 
 
 class JobSelectWindow(BaseInputWindow):
@@ -25,6 +27,8 @@ class JobSelectWindow(BaseInputWindow):
         self.buttons = {"Exit": self.close, "Next": self.show_next_window}
         self.data_manager = DataManager(query, info)
         self.navi_manager = NavigatorManager()
+        self.execute_manager = ExecuteManager(make_base_info, self)
+        # self.execute_manager = ExecuteManager(test_function, self)
         self.init_ui()
 
     def init_ui(self):
@@ -68,17 +72,19 @@ class JobSelectWindow(BaseInputWindow):
             for idx in range(1, self.data_manager.widget_number) 
             if self.data_manager.get_widget(idx).get_value() != ""
         ]
-        print(f"base_info_input : {base_info_input}")
-        if len(base_info_input):
-            self.base_info = make_base_info(*base_info_input)
-        else:
-            logging.warning("Base information is skipped!")
-            self.base_info = DataModel("BASE")
+        self.base_info = DataModel("BASE")
+        # This is needed to avoid pandas issue in sub-thread
+        df = pd.read_excel(base_info_input[0], sheet_name=0, header=None)
+        df.fillna("N/A", inplace=True)
+        idx = (df != "N/A").any(axis=1).idxmax()
+        df = df.iloc[idx:]
+        self.execute_manager.execute_function(df, base_info=self.base_info, callback=self.call_next_window)
+
+    def call_next_window(self):
         self.next_query = self.data_manager.info.get_data(self.current_job).query_func(
             self.base_info)
         self.next_func = self.data_manager.info.get_data(self.current_job).execute_func
         self.data_manager.save_data()
-        self.hide()
         logging.info(f"Selected job is {self.current_job}")
         self.navi_manager.show_next_window(
             InputWindow,
@@ -89,6 +95,7 @@ class JobSelectWindow(BaseInputWindow):
             self.next_func,
         )
         self.navi_manager.next_window = None
+        self.hide()
 
 
 class InputWindow(BaseInputWindow):

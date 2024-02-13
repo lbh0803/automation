@@ -1,10 +1,42 @@
 import logging
 import time
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal, QObject, QRunnable, pyqtSlot
 
 from model.data import DataModel
 
+
+
+class WorkerSignals(QObject):
+    finished = pyqtSignal(object)
+    updated = pyqtSignal(float)
+
+class Worker(QRunnable):
+    def __init__(self, func, signal, *args, **kwargs):
+        super(Worker, self).__init__()
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = signal
+        self.finished = False
+
+    @pyqtSlot()
+    def run(self):
+        try:
+            self.kwargs["callback"] = self._make_update
+            self.func(*self.args, **self.kwargs)
+            result = True
+        except Exception as e:
+            result = False
+        finally:
+            self.finished = True
+            self.signals.finished.emit(result)
+
+    def _make_update(self, value):
+        self.signals.updated.emit(value)
+
+    def is_finished(self):
+        self.finished = True
 
 class WorkerThread(QThread):
     """
@@ -12,6 +44,7 @@ class WorkerThread(QThread):
     """
 
     finished = pyqtSignal(object)
+    updated = pyqtSignal(int)
 
     def __init__(self, func, *args, **kwargs):
         super().__init__()
@@ -20,12 +53,24 @@ class WorkerThread(QThread):
         self.kwargs = kwargs
 
     def run(self):
+        logging.info(f"Start worker thread, function : {self.func}")
         try:
+            self.kwargs["callback"] = self._make_update
             self.func(*self.args, **self.kwargs)
             result = True
-        except Exception("execute funcion failed"):
+        except Exception as e:
+            logging.error(f"Function execution failed: {e}")
             result = False
         self.finished.emit(result)
+        
+    def _make_update(self, value):
+        self.updated.emit(value)
+
+
+def monitor_thread(thread, callback, val):
+    thread.join()
+    callback(val)
+    logging.info(f"thread : {thread.name} is finished")
 
 
 def func_log(func):

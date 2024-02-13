@@ -1,11 +1,41 @@
 from abc import abstractmethod
+import logging
+import threading
 
-from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QLineEdit,
+from PyQt5.QtWidgets import (QProgressBar, QWidget, QCheckBox, QComboBox, QFileDialog, QLineEdit,
                              QPlainTextEdit, QPushButton, QVBoxLayout)
-
+from PyQt5.QtGui import QFont
 from view.ui_interface import BaseInputWidget
 
 
+class ProgressBar(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.value = 0
+        self._lock = threading.Lock()
+        
+        self.progressbar = QProgressBar(self)
+        self.progressbar.setMaximum(100)
+        self.progressbar.setValue(self.value)
+        
+        self.font = QFont("Bookman Old Style", 12, QFont.Bold)
+        self.font.setBold(True)
+        self.setFont(self.font)
+        
+        self.layout = QVBoxLayout(self)
+        self.layout.addWidget(self.progressbar)
+        self.setLayout(self.layout)
+        
+        self.setFixedSize(300, 100)
+        
+    def update_progress(self, add_value):
+        with self._lock:
+            logging.info("Entered to the critical section")
+            self.value += add_value
+            self.progressbar.setValue(self.value // 100 + 1)
+            logging.info(f"Added : {add_value}, Updated value: {self.value // 100}")
+        
 class LineEditWidget(BaseInputWidget):
 
     def __init__(self, label_text):
