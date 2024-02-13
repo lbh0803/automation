@@ -1,18 +1,13 @@
 import logging
-from functools import partial
-import time
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QLabel, QHBoxLayout, QScrollArea, QVBoxLayout, QWidget
-import pandas as pd
-
 from controller.controller import (ButtonManager, DataManager, ExecuteManager,
                                    NavigatorManager)
-from controller.user_function import make_base_info, test_function
+from controller.user_function import make_base_info
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
-from view.ui_widget import CheckBoxWidget, ProgressBar
 
 
 class JobSelectWindow(BaseInputWindow):
@@ -73,12 +68,7 @@ class JobSelectWindow(BaseInputWindow):
             if self.data_manager.get_widget(idx).get_value() != ""
         ]
         self.base_info = DataModel("BASE")
-        # This is needed to avoid pandas issue in sub-thread
-        df = pd.read_excel(base_info_input[0], sheet_name=0, header=None)
-        df.fillna("N/A", inplace=True)
-        idx = (df != "N/A").any(axis=1).idxmax()
-        df = df.iloc[idx:]
-        self.execute_manager.execute_function(df, base_info=self.base_info, callback=self.call_next_window)
+        self.execute_manager.execute_function(base_info_input, base_info=self.base_info, callback=self.call_next_window)
 
     def call_next_window(self):
         self.next_query = self.data_manager.info.get_data(self.current_job).query_func(
@@ -191,13 +181,15 @@ class InputWindow(BaseInputWindow):
 
     def show_next_window(self):
         self.data_manager.save_data()
-        self.data_manager.update_info()
+        repeat_break = self.data_manager.update_info()
         self.data_manager.query.up_cnt()
         self.hide()
-        if self.navi_manager.next_window:
+        if self.navi_manager.next_window and not repeat_break:
             self.navi_manager.next_window.data_manager.restore_data()
             self.navi_manager.next_window.data_manager.set_info(self.data_manager.info)
             self.navi_manager.next_window.data_manager.copy_pre_info()
+        else:
+            self.navi_manager.next_window = None
         self.data_manager.copy_next_query()
         self.navi_manager.show_next_window(
             InputWindow,

@@ -52,18 +52,17 @@ def make_base_info(*args, **kwargs):
     """
     This makes dataframe from dftmux excel sheet
     """
-    # dftmux_excel = args[0]
-    df = args[0]
+    dftmux_excel = args[0][0]
     try:
-        # df = pd.read_excel(dftmux_excel, sheet_name=0, header=None)
-        # df.fillna("N/A", inplace=True)
-        # idx = (df != "N/A").any(axis=1).idxmax()
-        # df = df.iloc[idx:]
+        df = pd.read_excel(dftmux_excel, sheet_name=0, header=None)
+        df.fillna("N/A", inplace=True)
+        idx = (df != "N/A").any(axis=1).idxmax()
+        df = df.iloc[idx:]
         callback = kwargs.get("callback", None)
         base_info = kwargs.get("base_info", None)
         make_mode_info(df, base_info, callback)
         base_info.show_all()
-        print("Get Dataframe, Success!")
+        logging.info("Get Dataframe, Success!")
     except Exception as e:
         logging.error(f"Error occured while making base_info: {e}")
 
@@ -76,7 +75,7 @@ def make_mode_info(df, mode_info, callback):
     skip_list = ["SCAN", "BIST", "JTAG", "IO", "FAKE"]
     for c_idx in range(column_size):
         callback(10000 / (column_size-1))
-        # time.sleep(0.3)
+        time.sleep(0.1)
         if "TEST_MODE" not in df.iloc[0, c_idx]:
             continue
         skip = 0

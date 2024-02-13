@@ -111,8 +111,11 @@ class Query:
         """
         if not self.is_repeat_type() or self._repeat_break:
             self._cnt += 1
+            logging.info(f"Go to the next query, cnt -> {self._cnt}")
         else:
             self._repeat_cnt[self._cnt] += 1
+            logging.info(f"Increase repeat cnt -> {self._repeat_cnt[self._cnt]}")
+        logging.info(f"After up_cnt, repeat type: {self.is_repeat_type()}, break: {self._repeat_break}")
 
     def down_cnt(self):
         """
@@ -120,8 +123,11 @@ class Query:
         """
         if self._repeat_cnt[self._cnt] > 1:
             self._repeat_cnt[self._cnt] -= 1
+            logging.info(f"Decrease repeat cnt -> {self._repeat_cnt[self._cnt]}")
         else:
             self._cnt -= 1
+            logging.info(f"Back to the previous query cnt -> {self._cnt}")
+        logging.info(f"After donw_cnt, repeat type: {self.is_repeat_type()}, break: {self._repeat_break}")
 
     def is_repeat_type(self):
         """
@@ -133,7 +139,7 @@ class Query:
 
     def set_repeat_break(self, value):
         self._repeat_break = value
-        logging.info(f"Repeat break is called break : {self._repeat_break}, go to next step")
+        logging.info(f"Set repeat break is called break : {self._repeat_break}")
 
     def is_last(self):
         if self._cnt == len(self.query) - 1:

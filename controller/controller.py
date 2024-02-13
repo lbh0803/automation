@@ -3,9 +3,8 @@ import logging
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QMessageBox, QPushButton
-from PyQt5.QtCore import QThreadPool
 
-from controller.utility import Worker, WorkerSignals, WorkerThread, func_log
+from controller.utility import WorkerThread, func_log
 from model.data import DataModel
 from view.ui_widget import ProgressBar
 
@@ -97,7 +96,9 @@ class DataManager:
                     new_key + "." + self._input_varname[idx],
                     self._input_widgets[idx].get_value(),
                 )
-            self._check_repeat_break(self._input_widgets[-1].get_value())
+            breakable = self._input_widgets[-1].get_value()
+            self.check_repeat_break(breakable)
+            return breakable
         else:
             for idx in range(self.widget_number):
                 self.info.set_data(self._input_varname[idx], self._input_widgets[idx].get_value())
@@ -105,7 +106,7 @@ class DataManager:
     def restore_info(self):
         self.info = copy.deepcopy(self.pre_info)
 
-    def _check_repeat_break(self, value):
+    def check_repeat_break(self, value):
         self.query.set_repeat_break(value)
 
     def print_all(self):
@@ -159,13 +160,16 @@ class ExecuteManager:
 
     def _handle_result(self, result):
         if result:
-            self.show_msgbox("Complete!")
+            self._show_msgbox("Complete!")
         else:
-            self.show_msgbox("Fail!")
+            self._show_msgbox("Fail!")
+        self._run_callback()
+    
+    def _run_callback(self):
         if "callback" in self.kwargs:
             self.kwargs["callback"]()
 
-    def show_msgbox(self, text):
+    def _show_msgbox(self, text):
         self.msg = QMessageBox(self._parent)
         font = QFont("Bookman Old Style", 15, QFont.Bold)
         self.msg.setFont(font)
