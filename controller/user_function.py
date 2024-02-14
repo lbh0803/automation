@@ -98,7 +98,13 @@ def make_mode_info(df, mode_info, callback):
 
 
 @func_log
-def make_tb(*args, **kwargs):
+def make_connection_testbench(*args, **kwargs):
+    time.sleep(0.5)
+    pass
+
+
+@func_log
+def make_uds_testbench(*args, **kwargs):
     time.sleep(0.5)
     pass
 
