@@ -4,7 +4,7 @@ from collections import namedtuple
 
 from PyQt5.QtWidgets import QApplication
 
-from controller.user_function import make_atp, make_cfg, make_connection_testbench, make_uds_testbench
+from model.business_logic import make_atp, make_cfg, make_connection_testbench, make_uds_testbench
 from model.config import (JOB_A1, JOB_A2, JOB_B, JOB_C, construct_a1_query,
                           construct_a2_query, construct_b_query, 
                           construct_base_query, construct_c_query)

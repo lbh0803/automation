@@ -3,6 +3,7 @@ import logging
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QMessageBox, QPushButton
+import pandas as pd
 
 from controller.utility import WorkerThread, func_log
 from model.data import DataModel
@@ -135,9 +136,9 @@ class NavigatorManager:
             pass
         self.pre_window.show()
 
-    def show_next_window(self, BaseInputWindow, *args):
+    def show_next_window(self, BaseInputWindow, *args, **kwargs):
         if not self.next_window:
-            self.next_window = BaseInputWindow(*args)
+            self.next_window = BaseInputWindow(*args, **kwargs)
         else:
             self.next_window.show()
 
@@ -149,13 +150,17 @@ class ExecuteManager:
         self._parent = parent
 
     def execute_function(self, *args, **kwargs):
-        self.progressbar = ProgressBar()
+        user_input = kwargs.get("user_input", None)
+        self.dataframe_extractor = DataframeExtractor(user_input)
+        self.dataframe_extractor.extract_dataframe()
+        kwargs["dataframe_list"] = self.dataframe_extractor.dataframe_list
         self.kwargs = kwargs
-        self.progressbar.show()
         self.worker_thread = WorkerThread(self.func, *args, **kwargs)
         self.worker_thread.finished.connect(self._handle_result)
         self.worker_thread.updated.connect(self._udpate_progress)
         self.worker_thread.start()
+        self.progressbar = ProgressBar()
+        self.progressbar.show()
 
     def _udpate_progress(self, value):
         self.progressbar.update_progress(value)
@@ -178,3 +183,34 @@ class ExecuteManager:
         self.msg.setText(text)
         self.msg.buttonClicked.connect(self.progressbar.close)
         self.msg.show()
+
+
+class DataframeExtractor:
+    def __init__(self, user_input):
+        self.user_input = user_input
+        self.dataframe_list = list()
+    
+    def extract_dataframe(self):
+        """
+        To avoid unexpected Gui close, extract dataframe in mainthread
+        """
+        self.user_input.show_all()
+        for variable in self.user_input.data:
+            if "_xlsx" in variable:
+                self._convert_to_dataframe(self.user_input.get_data(variable))
+        logging.info("Extracting dataframe finished")
+
+    def _convert_to_dataframe(self, excel):
+        """
+        To avoid unexpected Gui close, extract dataframe in mainthread
+        """
+        try:
+            df = pd.read_excel(excel, sheet_name=None, header=None)
+            for dataframe in df.values():
+                dataframe.fillna("N/A", inplace=True)
+                r_idx = (dataframe != "N/A").any(axis=1).idxmax()
+                c_idx = (dataframe != "N/A").any(axis=0).idxmax()
+                dataframe = dataframe.iloc[r_idx:, c_idx:]
+                self.dataframe_list.append(dataframe)
+        except Exception as e:
+            logging.error(f"Error while converting excel data to dataframe : {e}")

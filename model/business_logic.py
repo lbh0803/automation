@@ -44,7 +44,7 @@ def make_base_info(*args, **kwargs):
     This makes dataframe from dftmux excel sheet
     """
     try:
-        df = args[0][0]
+        df = kwargs.get("dataframe_list", None)[0]
         callback = kwargs.get("callback", None)
         base_info = kwargs.get("base_info", None)
         make_mode_info(df, base_info, callback)
@@ -52,6 +52,7 @@ def make_base_info(*args, **kwargs):
         logging.info("Get Dataframe, Success!")
     except Exception as e:
         logging.error(f"Error occured while making base_info: {e}")
+        raise
 
 
 def make_mode_info(df, mode_info, callback):
@@ -128,6 +129,7 @@ def make_cfg(*args, **kwargs):
         mode_info_from_user.show_all()
     except KeyError:
         logging.error("No mode informaion")
+        raise
     main_mode = basic_info_from_user.get_data("main_mode")
     eds_path = basic_info_from_user.get_data("eds_path")
     callback = kwargs.get("callback", None)

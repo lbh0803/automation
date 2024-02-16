@@ -132,7 +132,7 @@ def construct_b_query(base_info):
         2,
         "add_pin",
         PlainTextEditWidget,
-        ">> ADD_PIN Information\nex)\nADD_PIN XTCXO input = 0; \nADD_PIN XO32 OUTPUT = X;",
+        ">> ADD_PIN Information\nex)\nADD_PIN XTCXO INPUT = 0; \nADD_PIN XO32 OUTPUT = X;",
     )
     job.set_query(
         True,
@@ -160,14 +160,14 @@ def construct_b_query(base_info):
         2,
         "cycle",
         LineEditWidget,
-        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n***FROM HERE, DATA FOR VCD CONVERSION***\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n >> CYCLE Information - Period\nex) 100",
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n***FROM HERE, DATA FOR VCD CONVERSION***\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n>> CYCLE Information - Period\nex) 100",
     )
     job.set_query(
         True,
         2,
         "pin_type",
         PlainTextEditWidget,
-        ">> PINTYPE Information\n>> If you want to override default pintype, write here \nDefault) \ninput -> PINTYPE NRZ XGPIO4 @0;\noutput -> PINTYPE STB XGPIO5 @CYCLE * 0.9",
+        ">> PINTYPE Information\n>> If you want to override default pintype, write here \nDefault) \nINPUT  -> PINTYPE NRZ XGPIO4 @0;\nOUTPUT -> PINTYPE STB XGPIO5 @CYCLE * 0.9",
     )
     job.set_query(
         True, 2, "bidirection_control", LineEditWidget, ">> Bidirection Control Signal"
@@ -191,7 +191,7 @@ def construct_b_query(base_info):
         3,
         "more_info",
         PlainTextEditWidget,
-        ">> If you need more information, write here in format \n>> This would be applied to the merge2atp step\nex) ADD_PIN XTCXO input = 0;",
+        ">> If you need more information, write here in format \n>> This would be applied to the merge2atp step\nex) ADD_PIN XTCXO INPUT = 0;",
     )
 
     return job

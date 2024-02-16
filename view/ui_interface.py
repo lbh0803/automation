@@ -93,30 +93,4 @@ class BaseInputWindow(QWidget):
             event.accept()
         else:
             event.ignore()
-
-    def extract_dataframe(self, dataframe_list, user_input):
-        """
-        To avoid unexpected Gui close, extract dataframe in mainthread
-        """
-        user_input.show_all()
-        for variable in user_input.data:
-            if "_xlsx" in variable:
-                self.convert_to_dataframe(dataframe_list, user_input.get_data(variable))
-        logging.info("Extracting dataframe finished")
-
-    def convert_to_dataframe(self, dataframe_list, excel):
-        """
-        To avoid unexpected Gui close, extract dataframe in mainthread
-        """
-        try:
-            df = pd.read_excel(excel, sheet_name=None, header=None)
-            for dataframe in df.values():
-                dataframe.fillna("N/A", inplace=True)
-                r_idx = (dataframe != "N/A").any(axis=1).idxmax()
-                c_idx = (dataframe != "N/A").any(axis=0).idxmax()
-                dataframe = dataframe.iloc[r_idx:, c_idx:]
-                dataframe_list.append(dataframe)
-        except Exception as e:
-            logging.error(f"Error while converting excel data to dataframe : {e}")
-
     

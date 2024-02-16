@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QScrollArea, QVBoxLayout,
 
 from controller.controller import (ButtonManager, DataManager, ExecuteManager,
                                    NavigatorManager)
-from controller.user_function import make_base_info
+from model.business_logic import make_base_info
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
 
@@ -59,22 +59,13 @@ class JobSelectWindow(BaseInputWindow):
         self.show()
 
     def show_next_window(self):
-        # self.current_job = self.data_manager.get_widget(0).get_value()
-        # base_info_input = [
-        #     self.data_manager.get_widget(idx).get_value()
-        #     for idx in range(1, self.data_manager.widget_number) 
-        #     if self.data_manager.get_widget(idx).get_value() != ""
-        # ]
-        # self.base_info = DataModel("BASE")
-        # self.execute_manager.execute_function(base_info_input, base_info=self.base_info, callback=self.call_next_window)
-        self.dataframe_list = list()
         self.data_manager.update_info()
         self.data_manager.show_all()
         self.current_job = self.data_manager.info.get_data("job")
-        self.extract_dataframe(self.dataframe_list, self.data_manager.info)
         self.base_info = DataModel("BASE")
-        self.execute_manager.execute_function(self.dataframe_list, self.data_manager.info, 
-                                              base_info=self.base_info, callback=self.call_next_window)
+        self.execute_manager.execute_function(base_info=self.base_info,
+                                              user_input=self.data_manager.info, 
+                                              callback=self.call_next_window)
 
     def call_next_window(self):
         self.next_query = self.data_manager.info.get_data(self.current_job).query_func(
@@ -84,11 +75,11 @@ class JobSelectWindow(BaseInputWindow):
         logging.info(f"Selected job is {self.current_job}")
         self.navi_manager.show_next_window(
             InputWindow,
-            self.next_query,
-            DataModel("INFO"),
-            self.base_info,
-            self,
-            self.next_func,
+            query=self.next_query,
+            info=DataModel("INFO"),
+            base_info=self.base_info,
+            pre_window=self,
+            func=self.next_func,
         )
         self.navi_manager.next_window = None
         self.hide()
@@ -196,17 +187,15 @@ class InputWindow(BaseInputWindow):
         self.data_manager.copy_next_query()
         self.navi_manager.show_next_window(
             InputWindow,
-            self.data_manager.next_query,
-            self.data_manager.info,
-            self.data_manager.base_info,
-            self,
-            self.execute_manager.func,
+            query=self.data_manager.next_query,
+            info=self.data_manager.info,
+            base_info=self.data_manager.base_info,
+            pre_window=self,
+            func=self.execute_manager.func,
         )
 
     def execute_function(self):
-        self.dataframe_list = list()
         self.data_manager.update_info()
         self.data_manager.show_all()
-        self.extract_dataframe(self.dataframe_list, self.data_manager.info)
-        self.execute_manager.execute_function(self.dataframe_list, self.data_manager.base_info, 
-                                              self.data_manager.info)
+        self.execute_manager.execute_function(base_info=self.data_manager.base_info, 
+                                              user_input=self.data_manager.info)
