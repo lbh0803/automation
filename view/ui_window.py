@@ -40,9 +40,6 @@ class JobSelectWindow(BaseInputWindow):
         self.container_layout = QVBoxLayout()
 
         self.layout = QVBoxLayout(self)
-        self.font = QFont("Bookman Old Style", 12, QFont.Bold)
-        self.font.setBold(True)
-        self.setFont(self.font)
         for idx in range(self.data_manager.widget_number):
             self.container_layout.addWidget(self.data_manager.get_widget(idx))
 
@@ -62,14 +59,22 @@ class JobSelectWindow(BaseInputWindow):
         self.show()
 
     def show_next_window(self):
-        self.current_job = self.data_manager.get_widget(0).get_value()
-        base_info_input = [
-            self.data_manager.get_widget(idx).get_value()
-            for idx in range(1, self.data_manager.widget_number) 
-            if self.data_manager.get_widget(idx).get_value() != ""
-        ]
+        # self.current_job = self.data_manager.get_widget(0).get_value()
+        # base_info_input = [
+        #     self.data_manager.get_widget(idx).get_value()
+        #     for idx in range(1, self.data_manager.widget_number) 
+        #     if self.data_manager.get_widget(idx).get_value() != ""
+        # ]
+        # self.base_info = DataModel("BASE")
+        # self.execute_manager.execute_function(base_info_input, base_info=self.base_info, callback=self.call_next_window)
+        self.dataframe_list = list()
+        self.data_manager.update_info()
+        self.data_manager.show_all()
+        self.current_job = self.data_manager.info.get_data("job")
+        self.extract_dataframe(self.dataframe_list, self.data_manager.info)
         self.base_info = DataModel("BASE")
-        self.execute_manager.execute_function(base_info_input, base_info=self.base_info, callback=self.call_next_window)
+        self.execute_manager.execute_function(self.dataframe_list, self.data_manager.info, 
+                                              base_info=self.base_info, callback=self.call_next_window)
 
     def call_next_window(self):
         self.next_query = self.data_manager.info.get_data(self.current_job).query_func(
@@ -123,9 +128,6 @@ class InputWindow(BaseInputWindow):
         self.container_layout.setSpacing(20)
 
         self.layout = QVBoxLayout(self)
-        self.font = QFont("Bookman Old Style", 12, QFont.Bold)
-        self.font.setBold(True)
-        self.setFont(self.font)
 
         for idx in range(self.data_manager.widget_number):
             self.add_widget2layout(idx)
@@ -202,6 +204,9 @@ class InputWindow(BaseInputWindow):
         )
 
     def execute_function(self):
+        self.dataframe_list = list()
         self.data_manager.update_info()
-        self.data_manager.print_all()
-        self.execute_manager.execute_function(self.data_manager.base_info, self.data_manager.info)
+        self.data_manager.show_all()
+        self.extract_dataframe(self.dataframe_list, self.data_manager.info)
+        self.execute_manager.execute_function(self.dataframe_list, self.data_manager.base_info, 
+                                              self.data_manager.info)

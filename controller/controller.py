@@ -16,9 +16,12 @@ class ButtonManager:
         self._parent = parent
 
     def create_button(self, name, callback, *args, **kwargs):
-        button = QPushButton(name, self._parent)
-        button.clicked.connect(lambda: callback(*args, **kwargs))
-        self.button_data.set_data(name, button)
+        self.button = QPushButton(name, self._parent)
+        self.button.clicked.connect(lambda: callback(*args, **kwargs))
+        self.font = QFont("Bookman Old Style", 12)
+        self.font.setBold(True)
+        self.button.setFont(self.font)
+        self.button_data.set_data(name, self.button)
 
     def get_button(self, key):
         try:
@@ -109,7 +112,7 @@ class DataManager:
     def check_repeat_break(self, value):
         self.query.set_repeat_break(value)
 
-    def print_all(self):
+    def show_all(self):
         self.info.show_all()
 
     def get_widget(self, idx):
@@ -145,7 +148,6 @@ class ExecuteManager:
         self.func = func
         self._parent = parent
 
-    @func_log
     def execute_function(self, *args, **kwargs):
         self.progressbar = ProgressBar()
         self.kwargs = kwargs

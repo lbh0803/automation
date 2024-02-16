@@ -43,13 +43,8 @@ def make_base_info(*args, **kwargs):
     """
     This makes dataframe from dftmux excel sheet
     """
-    dftmux_excel = args[0][0]
     try:
-        df = pd.read_excel(dftmux_excel, sheet_name=0, header=None)
-        df.fillna("N/A", inplace=True)
-        r_idx = (df != "N/A").any(axis=1).idxmax()
-        c_idx = (df != "N/A").any(axis=0).idxmax()
-        df = df.iloc[r_idx:, c_idx:]
+        df = args[0][0]
         callback = kwargs.get("callback", None)
         base_info = kwargs.get("base_info", None)
         make_mode_info(df, base_info, callback)

@@ -37,7 +37,7 @@ def construct_base_query():
     base.set_query(
         False,
         0,
-        "dftmux_xls",
+        "dftmux_xlsx",
         FilePathWidget,
         ">> Base Information - DFTMUX Info Excel\nex) /USER/DFT/DFTMUX.xlsx",
     )

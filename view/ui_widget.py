@@ -6,7 +6,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QLineEdit,
                              QPlainTextEdit, QProgressBar, QPushButton,
                              QVBoxLayout, QWidget)
-
+from PyQt5.QtCore import QCoreApplication
 from view.ui_interface import BaseInputWidget
 
 
@@ -33,10 +33,20 @@ class ProgressBar(QWidget):
         
     def update_progress(self, add_value):
         with self._lock:
-            logging.info("Entered to the critical section")
+            # logging.info("Entered to the critical section")
             self.value += add_value
             self.progressbar.setValue(self.value // 100 + 1)
-            logging.info(f"Added : {add_value}, Updated value: {self.value // 100}")
+            
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QCoreApplication.instance().primaryScreen().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+        
+    def show(self):
+        super().show()
+        self.center()
+        
         
 class LineEditWidget(BaseInputWidget):
 
