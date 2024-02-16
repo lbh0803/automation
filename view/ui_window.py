@@ -21,7 +21,7 @@ class JobSelectWindow(BaseInputWindow):
         super().__init__()
 
         self.button_manager = ButtonManager(self)
-        self.buttons = {"Exit": self.close, "Next": self.show_next_window}
+        self.buttons = {"Exit": self.close, "Submit": self.execute_function}
         self.data_manager = DataManager(query, info)
         self.navi_manager = NavigatorManager()
         self.execute_manager = ExecuteManager(make_base_info, self)
@@ -58,16 +58,16 @@ class JobSelectWindow(BaseInputWindow):
         self.setLayout(self.layout)
         self.show()
 
-    def show_next_window(self):
+    def execute_function(self):
         self.data_manager.update_info()
         self.data_manager.show_all()
         self.current_job = self.data_manager.info.get_data("job")
         self.base_info = DataModel("BASE")
         self.execute_manager.execute_function(base_info=self.base_info,
                                               user_input=self.data_manager.info, 
-                                              callback=self.call_next_window)
+                                              callback=self.show_next_window)
 
-    def call_next_window(self):
+    def show_next_window(self):
         self.next_query = self.data_manager.info.get_data(self.current_job).query_func(
             self.base_info)
         self.next_func = self.data_manager.info.get_data(self.current_job).execute_func
@@ -147,7 +147,7 @@ class InputWindow(BaseInputWindow):
     def add_widget2layout(self, idx):
         """
         Add widgets to layout,
-        partial is needed to fix idx when it called later.
+        partial is needed to fix idx when it is called later.
         """
         widget = self.data_manager.get_widget(idx)
         widget.reset()
