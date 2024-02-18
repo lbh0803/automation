@@ -3,5 +3,4 @@
 **/*.db
 .venv
 .gitignore
-pandas_test
 reference*
