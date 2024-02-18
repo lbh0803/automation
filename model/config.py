@@ -153,7 +153,7 @@ def construct_b_query(base_info):
         2,
         "alias_pin",
         PlainTextEditWidget,
-        ">> ALIAS Information \nex) ALIAS ADC_EN = XGPIO5;",
+        ">> ALIAS Information, no need to write IEEE signal(automatically added) \nex) ALIAS ADC_EN = XGPIO5;(O) \nex) WRCK = XGPIO5;(X)",
     )
     job.set_query(
         True,
