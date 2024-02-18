@@ -1,7 +1,8 @@
 import os
 import tempfile
+import time
 import pandas as pd
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, send_file, after_this_request
 import numpy as np
 
 EXCEL_FILE = r"C:\Users\82108\Desktop\pandas.xlsx"
@@ -36,16 +37,32 @@ def display_home():
 @app.route("/display/<sheet_name>")
 def display_sheet(sheet_name):
     df = dfs.get(sheet_name, pd.DataFrame())
-    html_table = df.to_html()
+    df.reset_index(drop=True, inplace=True)
+    html_table = df.to_html(header=False, index=True)
     return render_template("sheet.html", sheet_name=sheet_name, df=html_table, excel_file=f'/download/{sheet_name}')
 
 
 @app.route("/download/<sheet_name>")
 def download_sheet(sheet_name):
     df = dfs.get(sheet_name, pd.DataFrame())
-    fd, temp_file = tempfile.mkstemp(suffix='.xlsx')
-    df.to_excel(temp_file, index=False)
-    return send_file(temp_file, as_attachment=True, download_name=f'{sheet_name}.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as tmp:
+        df.to_excel(tmp.name, index=False)
+        temp_file_path = tmp.name
+    response = send_file(temp_file_path, as_attachment=True, download_name=f'{sheet_name}.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    # os.remove(temp_file_path)
+    return response
+
+
+@app.route("/download/all")
+def download_all_sheets():
+    with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as tmp_file:
+        with pd.ExcelWriter(tmp_file.name, engine='openpyxl') as writer:
+            for sheet_name, df in dfs.items():
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
+        temp_file_path = tmp_file.name
+    response = send_file(temp_file_path, as_attachment=True, download_name='all_sheets.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    # os.remove(temp_file_path)
+    return response
 
 
 if __name__ == "__main__":

@@ -16,5 +16,6 @@
         <li><a href="{{ url_for('display_sheet', sheet_name=name) }}">{{ name }}</a></li>
         {% endfor %}
     </ul>
+    <p><a href="{{ url_for('download_all_sheets') }}">Download All Excel Sheets</a></p>
 </body>
 </html>
