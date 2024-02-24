@@ -4,8 +4,15 @@ from abc import abstractmethod
 import pandas as pd
 from PyQt5.QtCore import QCoreApplication, Qt
 from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QMessageBox, QPushButton,
-                             QScrollArea, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class BaseInputWidget(QWidget):
@@ -54,6 +61,7 @@ class BaseInputWindow(QWidget):
     def __init__(self, logo):
         super().__init__()
         self.logo = logo
+        self.close_by_navigator = False
         self.center()
         self.init_ui()
 
@@ -133,19 +141,22 @@ class BaseInputWindow(QWidget):
         """
         This is called automatically, when exit button is clicked.
         """
-        msg = QMessageBox()
-        msg.setWindowTitle("Message")
-        msg.setText("Are you sure you want to quit?")
-
-        font = QFont("Bookman Old Style", 12, QFont.Bold)
-        msg.setFont(font)
-
-        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        msg.setDefaultButton(QMessageBox.No)
-
-        reply = msg.exec_()
-
-        if reply == QMessageBox.Yes:
+        if self.close_by_navigator:
             event.accept()
         else:
-            event.ignore()
+            msg = QMessageBox()
+            msg.setWindowTitle("Message")
+            msg.setText("Are you sure you want to quit?")
+
+            font = QFont("Bookman Old Style", 12, QFont.Bold)
+            msg.setFont(font)
+
+            msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            msg.setDefaultButton(QMessageBox.No)
+
+            reply = msg.exec_()
+
+            if reply == QMessageBox.Yes:
+                event.accept()
+            else:
+                event.ignore()

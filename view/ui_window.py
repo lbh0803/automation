@@ -1,7 +1,11 @@
 import logging
 
-from controller.controller import (ButtonManager, DataManager, ExecuteManager,
-                                   NavigatorManager)
+from controller.controller import (
+    ButtonManager,
+    DataManager,
+    ExecuteManager,
+    NavigatorManager,
+)
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
 
@@ -37,9 +41,9 @@ class JobSelectWindow(BaseInputWindow):
         self.container_layout.addLayout(self.button_layout)
 
     def button_control(self):
-        logging.info(f"{self.logo}")
         if self.logo == "main_logo.png":
             self.button_manager.enable_control("Submit", False)
+            self.button_manager.enable_control("Back", False)
         else:
             self.button_manager.enable_control("Next", False)
 
@@ -104,16 +108,18 @@ class JobSelectWindow(BaseInputWindow):
         self.hide()
 
     def go_home(self):
-        self.query = self.query_init()
-        self.info = self.info_init()
-        self.home = JobSelectWindow(
-            query=self.query,
-            info=self.info,
-            logo="main_logo",
+        self.first_query = self.query_init()
+        self.first_info = self.info_init()
+        self.navi_manager.go_home_window(
+            JobSelectWindow,
+            query=self.first_query,
+            info=self.first_info,
+            logo="main_logo.png",
             query_init=self.query_init,
             info_init=self.info_init,
         )
-        self.hide()
+        self.close_by_navigator = True
+        self.close()
 
 
 class InputWindow(BaseInputWindow):
@@ -122,8 +128,17 @@ class InputWindow(BaseInputWindow):
     You can put detailed data that would be used to execute your job.
     """
 
-    def __init__(self, query, info, base_info, logo, query_init,
-                 info_init, pre_window=None, func=None):
+    def __init__(
+        self,
+        query,
+        info,
+        base_info,
+        logo,
+        query_init,
+        info_init,
+        pre_window=None,
+        func=None,
+    ):
         self.logo = logo
         self.query_init = query_init
         self.info_init = info_init
@@ -199,13 +214,15 @@ class InputWindow(BaseInputWindow):
         )
 
     def go_home(self):
-        self.query = self.query_init()
-        self.info = self.info_init()
-        self.home = JobSelectWindow(
-            query=self.query,
-            info=self.info,
-            logo="main_logo",
+        self.first_query = self.query_init()
+        self.first_info = self.info_init()
+        self.navi_manager.go_home_window(
+            JobSelectWindow,
+            query=self.first_query,
+            info=self.first_info,
+            logo="main_logo.png",
             query_init=self.query_init,
             info_init=self.info_init,
         )
-        self.hide()
+        self.close_by_navigator = True
+        self.close()

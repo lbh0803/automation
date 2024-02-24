@@ -1,9 +1,14 @@
 from model.data import DataModel, Query
-from model.register_logic import (make_base_info, make_register_header,
-                                  make_register_rtl)
-from view.ui_widget import (CheckBoxWidget, ComboBoxWidget, DirPathWidget,
-                            FilePathWidget, LineEditWidget,
-                            MultiCheckBoxWidget, PlainTextEditWidget)
+from model.register_logic import make_base_info, make_register_header, make_register_rtl
+from view.ui_widget import (
+    CheckBoxWidget,
+    ComboBoxWidget,
+    DirPathWidget,
+    FilePathWidget,
+    LineEditWidget,
+    MultiCheckBoxWidget,
+    PlainTextEditWidget,
+)
 
 JOB_A = "A> Make SFR RTL\n=> Verilog RTL based on excel info"
 JOB_B = "B> Make SFR Header\n=> Make .h file in ARM CMSIS format"

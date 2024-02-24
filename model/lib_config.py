@@ -1,8 +1,14 @@
 from model.data import DataModel, Query
 from model.lib_logic import make_base_info, make_lib_status_info
-from view.ui_widget import (CheckBoxWidget, ComboBoxWidget, DirPathWidget,
-                            FilePathWidget, LineEditWidget,
-                            MultiCheckBoxWidget, PlainTextEditWidget)
+from view.ui_widget import (
+    CheckBoxWidget,
+    ComboBoxWidget,
+    DirPathWidget,
+    FilePathWidget,
+    LineEditWidget,
+    MultiCheckBoxWidget,
+    PlainTextEditWidget,
+)
 
 JOB_A = "A> Make LIB Status Sheet\n=> This will show corner status"
 

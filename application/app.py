@@ -1,15 +1,14 @@
 import logging
 import sys
 
-from PyQt5.QtWidgets import QApplication
-
+from controller.utility import SafeApplication, exception_hook
 from model.config import construct_app_query, construct_base_query
 from view.ui_window import JobSelectWindow
 
 
 class MainApplication:
     def __init__(self, window, logo):
-        self.app = QApplication([])
+        self.app = SafeApplication([])
         self.logo = logo
         self.window = window
         self.setup()
@@ -29,5 +28,6 @@ class MainApplication:
 
 
 if __name__ == "__main__":
+    sys.excepthook = exception_hook
     app = MainApplication(JobSelectWindow, "main_logo.png")
     app.run()

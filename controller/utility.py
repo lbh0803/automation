@@ -1,42 +1,26 @@
 import logging
 import time
+import traceback
 
-from PyQt5.QtCore import QObject, QRunnable, QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtWidgets import QApplication
 
 from model.data import DataModel
 
 
-class WorkerSignals(QObject):
-    finished = pyqtSignal(object)
-    updated = pyqtSignal(float)
+def exception_hook(exc_type, exc_value, exc_traceback):
+    print("Python error:", exc_type, ":", exc_value)
+    traceback.print_tb(exc_traceback)
 
 
-class Worker(QRunnable):
-    def __init__(self, func, signal, *args, **kwargs):
-        super(Worker, self).__init__()
-        self.func = func
-        self.args = args
-        self.kwargs = kwargs
-        self.signals = signal
-        self.finished = False
-
-    @pyqtSlot()
-    def run(self):
+class SafeApplication(QApplication):
+    def notify(self, receiver, event):
         try:
-            self.kwargs["callback"] = self._make_update
-            self.func(*self.args, **self.kwargs)
-            result = True
+            return QApplication.notify(self, receiver, event)
         except Exception as e:
-            result = False
-        finally:
-            self.finished = True
-            self.signals.finished.emit(result)
-
-    def _make_update(self, value):
-        self.signals.updated.emit(value)
-
-    def is_finished(self):
-        self.finished = True
+            logging.error("Exception caught from QApplication:", e)
+            traceback.print_exc()
+            return False
 
 
 class WorkerThread(QThread):

@@ -1,9 +1,20 @@
 from model.data import DataModel, Query
-from model.dft_logic import (make_atp, make_base_info, make_cfg,
-                             make_connection_testbench, make_uds_testbench)
-from view.ui_widget import (CheckBoxWidget, ComboBoxWidget, DirPathWidget,
-                            FilePathWidget, LineEditWidget,
-                            MultiCheckBoxWidget, PlainTextEditWidget)
+from model.dft_logic import (
+    make_atp,
+    make_base_info,
+    make_cfg,
+    make_connection_testbench,
+    make_uds_testbench,
+)
+from view.ui_widget import (
+    CheckBoxWidget,
+    ComboBoxWidget,
+    DirPathWidget,
+    FilePathWidget,
+    LineEditWidget,
+    MultiCheckBoxWidget,
+    PlainTextEditWidget,
+)
 
 JOB_A1 = "A-1> Make TESTMODE TB\n=> DFTMUX connection check (PAD <-> IP)"
 JOB_A2 = "A-2> Make TESTMODE TB\n=> UDS signal check in TESTMODE"

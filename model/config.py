@@ -20,7 +20,7 @@ def construct_base_query():
         0,
         "job",
         ComboBoxWidget,
-        ">> Select Job",
+        ">> Select App",
         JOB_A,
         JOB_B,
         JOB_C,

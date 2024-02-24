@@ -145,6 +145,9 @@ class NavigatorManager:
         else:
             self.next_window.show()
 
+    def go_home_window(self, BaseInputWindow, *args, **kwargs):
+        self.home_window = BaseInputWindow(*args, **kwargs)
+
 
 class ExecuteManager:
     def __init__(self, func, parent):
