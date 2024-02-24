@@ -1,5 +1,5 @@
 from model.data import DataModel, Query
-from model.dft_logic import (
+from model.dft.dft_logic import (
     make_atp,
     make_base_info,
     make_cfg,

@@ -1,7 +1,7 @@
 from model.data import DataModel, Query
-from model.dft_config import make_dft_query
-from model.lib_config import make_lib_query
-from model.register_config import make_register_query
+from model.dft.dft_config import make_dft_query
+from model.lib.lib_config import make_lib_query
+from model.register.register_config import make_register_query
 from view.ui_widget import ComboBoxWidget
 
 JOB_A = "LIB"

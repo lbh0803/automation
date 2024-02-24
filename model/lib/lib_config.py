@@ -1,5 +1,5 @@
 from model.data import DataModel, Query
-from model.lib_logic import make_base_info, make_lib_status_info
+from model.lib.lib_logic import make_base_info, make_lib_status_info
 from view.ui_widget import (
     CheckBoxWidget,
     ComboBoxWidget,

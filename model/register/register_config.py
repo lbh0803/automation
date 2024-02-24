@@ -1,5 +1,5 @@
 from model.data import DataModel, Query
-from model.register_logic import make_base_info, make_register_header, make_register_rtl
+from model.register.register_logic import make_base_info, make_register_header, make_register_rtl
 from view.ui_widget import (
     CheckBoxWidget,
     ComboBoxWidget,
