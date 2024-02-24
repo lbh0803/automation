@@ -1,13 +1,12 @@
 import logging
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QPixmap
-from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QScrollArea, QVBoxLayout,
-                             QWidget)
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QPushButton, QScrollArea,
+                             QVBoxLayout, QWidget)
 
 from controller.controller import (ButtonManager, DataManager, ExecuteManager,
                                    NavigatorManager)
-from model.business_logic import make_base_info
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
 
@@ -17,14 +16,16 @@ class JobSelectWindow(BaseInputWindow):
     You can select which job to be executed.
     """
 
-    def __init__(self, query, info):
+    def __init__(self, query, info, func=None):
         super().__init__()
 
         self.button_manager = ButtonManager(self)
-        self.buttons = {"Exit": self.close, "Submit": self.execute_function}
+        self.buttons = {"Exit": self.close, 
+                        "Next": self.show_next_window, 
+                        "Submit": self.execute_function}
         self.data_manager = DataManager(query, info)
         self.navi_manager = NavigatorManager()
-        self.execute_manager = ExecuteManager(make_base_info, self)
+        self.execute_manager = ExecuteManager(func, self)
         self.init_ui()
 
     def init_ui(self):
@@ -58,6 +59,23 @@ class JobSelectWindow(BaseInputWindow):
         self.setLayout(self.layout)
         self.show()
 
+    def show_next_window(self):
+        self.data_manager.update_info()
+        self.data_manager.show_all()
+        self.current_job = self.data_manager.info.get_data("job")
+        self.next_info = self.data_manager.info.get_data(self.current_job)
+        self.next_query = self.next_info.get_data("base_query")
+        self.next_func = self.next_info.get_data("base_function")
+        logging.info(f"Selected job is {self.current_job}")
+        self.navi_manager.show_next_window(
+            JobSelectWindow,
+            query=self.next_query,
+            info=self.next_info,
+            func=self.next_func,
+        )
+        self.navi_manager.next_window = None
+        self.hide()
+
     def execute_function(self):
         self.data_manager.update_info()
         self.data_manager.show_all()
@@ -65,12 +83,12 @@ class JobSelectWindow(BaseInputWindow):
         self.base_info = DataModel("BASE")
         self.execute_manager.execute_function(base_info=self.base_info,
                                               user_input=self.data_manager.info, 
-                                              callback=self.show_next_window)
+                                              callback=self.show_input_window)
 
-    def show_next_window(self):
-        self.next_query = self.data_manager.info.get_data(self.current_job).query_func(
+    def show_input_window(self):
+        self.next_query = self.data_manager.info.get_data(f"{self.current_job}.query_func")(
             self.base_info)
-        self.next_func = self.data_manager.info.get_data(self.current_job).execute_func
+        self.next_func = self.data_manager.info.get_data(f"{self.current_job}.execute_func")
         self.data_manager.save_data()
         logging.info(f"Selected job is {self.current_job}")
         self.navi_manager.show_next_window(
@@ -111,6 +129,15 @@ class InputWindow(BaseInputWindow):
         self.pixmap = self.pixmap.scaled(self.width(), self.height(), Qt.KeepAspectRatio)
         self.img_label.setPixmap(self.pixmap)
         
+        self.statusbar_layout = QHBoxLayout()
+        self.statusbar_layout.addStretch(1)
+        self.statusbar_widget = QWidget()
+        self.home_icon = QPushButton()
+        self.home_icon.setIcon(QIcon('home_logo.png'))
+        self.home_icon.clicked.connect(self.go_home)
+        self.statusbar_layout.addWidget(self.home_icon)
+        self.statusbar_widget.setLayout(self.statusbar_layout)
+        self.statusbar_widget.setFixedHeight(40)
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
 
@@ -139,6 +166,7 @@ class InputWindow(BaseInputWindow):
         self.container_layout.addLayout(self.button_layout)
         self.container.setLayout(self.container_layout)
         self.scroll_area.setWidget(self.container)
+        self.layout.addWidget(self.statusbar_widget)
         self.layout.addWidget(self.img_label)
         self.layout.addWidget(self.scroll_area)
         self.setLayout(self.layout)
@@ -199,3 +227,6 @@ class InputWindow(BaseInputWindow):
         self.data_manager.show_all()
         self.execute_manager.execute_function(base_info=self.data_manager.base_info, 
                                               user_input=self.data_manager.info)
+
+    def go_home(self):
+        pass
