@@ -209,6 +209,7 @@ def construct_c_query(base_info):
 
 def make_dft_query():
     query_data = DataModel("QUERY")
+    query_data.set_data(f"logo", "dft_logo.png")
     query_data.set_data(f"base_function", make_base_info)
     query_data.set_data(f"base_query", construct_base_query())
     query_data.set_data(f"{JOB_A1}.query_func", construct_a1_query)

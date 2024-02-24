@@ -53,13 +53,17 @@ def construct_a_query(base_info):
         "lib_list",
         MultiCheckBoxWidget,
         ">> LIB List",
-        "LIB1", "LIB2", "LIB3", "LIB4"
+        "LIB1",
+        "LIB2",
+        "LIB3",
+        "LIB4",
     )
     return job
 
 
 def make_lib_query():
     query_data = DataModel("QUERY")
+    query_data.set_data(f"logo", "lib_logo.png")
     query_data.set_data(f"base_function", make_base_info)
     query_data.set_data(f"base_query", construct_base_query())
     query_data.set_data(f"{JOB_A}.query_func", construct_a_query)

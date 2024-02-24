@@ -19,7 +19,7 @@ def make_base_info(*args, **kwargs):
         callback(100)
         time.sleep(0.05)
 
-        
+
 @func_log
 def make_register_rtl(*args, **kwargs):
     callback = kwargs.get("callback", None)

@@ -10,6 +10,7 @@ class WorkerSignals(QObject):
     finished = pyqtSignal(object)
     updated = pyqtSignal(float)
 
+
 class Worker(QRunnable):
     def __init__(self, func, signal, *args, **kwargs):
         super(Worker, self).__init__()
@@ -37,6 +38,7 @@ class Worker(QRunnable):
     def is_finished(self):
         self.finished = True
 
+
 class WorkerThread(QThread):
     """
     This is for controlling async functions
@@ -61,7 +63,7 @@ class WorkerThread(QThread):
             logging.error(f"Function execution failed: {e}")
             result = False
         self.finished.emit(result)
-        
+
     def _make_update(self, value):
         self.updated.emit(value)
 

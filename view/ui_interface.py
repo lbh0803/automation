@@ -1,10 +1,11 @@
-from abc import abstractmethod
 import logging
+from abc import abstractmethod
 
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QLabel, QMessageBox, QWidget
 import pandas as pd
+from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QMessageBox, QPushButton,
+                             QScrollArea, QVBoxLayout, QWidget)
 
 
 class BaseInputWidget(QWidget):
@@ -50,21 +51,76 @@ class BaseInputWindow(QWidget):
     """
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self, logo):
         super().__init__()
+        self.logo = logo
         self.center()
-        pass
+        self.init_ui()
 
-    @abstractmethod
     def init_ui(self):
+        self.layout = QVBoxLayout(self)
+        self.add_statusbar()
+        self.add_logo_img()
+        self.add_scroll_area()
+        self.add_button_area()
+        self.fill_scroll_area()
+        self.fill_button_area()
+        self.button_control()
+        self.setLayout(self.layout)
+        self.show()
+
+    def add_statusbar(self):
+        self.statusbar_layout = QHBoxLayout()
+        self.statusbar_layout.addStretch(1)
+        self.statusbar_widget = QWidget()
+        self.home_icon = QPushButton()
+        self.home_icon.setIcon(QIcon("home_logo.png"))
+        self.home_icon.clicked.connect(self.go_home)
+        self.statusbar_layout.addWidget(self.home_icon)
+        self.statusbar_widget.setLayout(self.statusbar_layout)
+        self.statusbar_widget.setFixedHeight(40)
+        self.layout.addWidget(self.statusbar_widget)
+
+    def add_logo_img(self):
+        self.img_label = QLabel()
+        self.pixmap = QPixmap(self.logo)
+        self.pixmap = self.pixmap.scaled(
+            self.width(), self.height(), Qt.KeepAspectRatio
+        )
+        self.img_label.setPixmap(self.pixmap)
+        self.layout.addWidget(self.img_label)
+
+    def add_scroll_area(self):
+        self.scroll_area = QScrollArea(self)
+        self.scroll_area.setWidgetResizable(True)
+        self.container = QWidget()
+        self.container_layout = QVBoxLayout()
+        self.container_layout.setSpacing(20)
+        self.container.setLayout(self.container_layout)
+        self.scroll_area.setWidget(self.container)
+        self.layout.addWidget(self.scroll_area)
+
+    def add_button_area(self):
+        self.button_layout = QHBoxLayout()
+
+    @abstractmethod
+    def fill_scroll_area(self):
         pass
 
     @abstractmethod
-    def add_widget2layout(self, idx):
+    def fill_button_area(self):
+        pass
+
+    @abstractmethod
+    def button_control(self):
         pass
 
     @abstractmethod
     def show_next_window(self):
+        pass
+
+    @abstractmethod
+    def go_home(self):
         pass
 
     def center(self):
@@ -93,4 +149,3 @@ class BaseInputWindow(QWidget):
             event.accept()
         else:
             event.ignore()
-    

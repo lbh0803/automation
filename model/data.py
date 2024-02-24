@@ -115,7 +115,9 @@ class Query:
         else:
             self._repeat_cnt[self._cnt] += 1
             logging.info(f"Increase repeat cnt -> {self._repeat_cnt[self._cnt]}")
-        logging.info(f"After up_cnt, repeat type: {self.is_repeat_type()}, break: {self._repeat_break}")
+        logging.info(
+            f"After up_cnt, repeat type: {self.is_repeat_type()}, break: {self._repeat_break}"
+        )
 
     def down_cnt(self):
         """
@@ -127,7 +129,9 @@ class Query:
         else:
             self._cnt -= 1
             logging.info(f"Back to the previous query cnt -> {self._cnt}")
-        logging.info(f"After donw_cnt, repeat type: {self.is_repeat_type()}, break: {self._repeat_break}")
+        logging.info(
+            f"After donw_cnt, repeat type: {self.is_repeat_type()}, break: {self._repeat_break}"
+        )
 
     def is_repeat_type(self):
         """

@@ -1,4 +1,3 @@
-
 from model.data import DataModel, Query
 from model.dft_config import make_dft_query
 from model.lib_config import make_lib_query

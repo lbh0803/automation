@@ -2,11 +2,12 @@ import logging
 import threading
 from abc import abstractmethod
 
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QCheckBox, QComboBox, QFileDialog, QLineEdit,
                              QPlainTextEdit, QProgressBar, QPushButton,
                              QVBoxLayout, QWidget)
-from PyQt5.QtCore import QCoreApplication
+
 from view.ui_interface import BaseInputWidget
 
 
@@ -16,40 +17,39 @@ class ProgressBar(QWidget):
 
         self.value = 0
         self._lock = threading.Lock()
-        
+
         self.progressbar = QProgressBar(self)
         self.progressbar.setMaximum(100)
         self.progressbar.setValue(self.value)
-        
+
         self.font = QFont("Bookman Old Style", 12, QFont.Bold)
         self.font.setBold(True)
         self.setFont(self.font)
-        
+
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.progressbar)
         self.setLayout(self.layout)
-        
+
         self.setFixedSize(300, 100)
-        
+
     def update_progress(self, add_value):
         with self._lock:
             # logging.info("Entered to the critical section")
             self.value += add_value
             self.progressbar.setValue(self.value // 100 + 1)
-            
+
     def center(self):
         qr = self.frameGeometry()
         cp = QCoreApplication.instance().primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-        
+
     def show(self):
         super().show()
         self.center()
-        
-        
-class LineEditWidget(BaseInputWidget):
 
+
+class LineEditWidget(BaseInputWidget):
     def __init__(self, label_text):
         super().__init__(label_text)
 
@@ -90,7 +90,6 @@ class CustomComboBox(QComboBox):
 
 
 class ComboBoxWidget(BaseInputWidget):
-
     def __init__(self, label_text, *items):
         self.items = items
         super().__init__(label_text)
@@ -124,7 +123,6 @@ class ComboBoxWidget(BaseInputWidget):
 
 
 class CheckBoxWidget(BaseInputWidget):
-
     def __init__(self, label_text, item):
         super().__init__(label_text)
 
@@ -157,7 +155,6 @@ class CheckBoxWidget(BaseInputWidget):
 
 
 class MultiCheckBoxWidget(BaseInputWidget):
-
     def __init__(self, label_text, *items):
         super().__init__(label_text)
 
@@ -198,13 +195,14 @@ class MultiCheckBoxWidget(BaseInputWidget):
     def __deepcopy__(self, memo):
         new_widget = MultiCheckBoxWidget(self.label.text(), *self.items)
         for idx in range(len(self.items)):
-            new_widget.check_box_list[idx].setChecked(self.check_box_list[idx].isChecked())
+            new_widget.check_box_list[idx].setChecked(
+                self.check_box_list[idx].isChecked()
+            )
         memo[id(self)] = new_widget
         return new_widget
 
 
 class PlainTextEditWidget(BaseInputWidget):
-
     def __init__(self, label_text):
         super().__init__(label_text)
 
@@ -235,7 +233,6 @@ class PlainTextEditWidget(BaseInputWidget):
 
 
 class DirPathWidget(LineEditWidget):
-
     def __init__(self, label_text):
         super().__init__(label_text)
 
@@ -245,7 +242,9 @@ class DirPathWidget(LineEditWidget):
 
     def open_dir_finder(self):
         options = QFileDialog.Options()
-        directory = QFileDialog.getExistingDirectory(self, "Select Dir", "", options=options)
+        directory = QFileDialog.getExistingDirectory(
+            self, "Select Dir", "", options=options
+        )
         if directory:
             self.line_edit.setText(directory)
 
@@ -257,7 +256,6 @@ class DirPathWidget(LineEditWidget):
 
 
 class FilePathWidget(LineEditWidget):
-
     def __init__(self, label_text):
         super().__init__(label_text)
 
@@ -267,11 +265,9 @@ class FilePathWidget(LineEditWidget):
 
     def open_file_finder(self):
         options = QFileDialog.Options()
-        file_name, _ = QFileDialog.getOpenFileName(self,
-                                                   "Select File",
-                                                   "",
-                                                   "Excel Files (*.xlsx)",
-                                                   options=options)
+        file_name, _ = QFileDialog.getOpenFileName(
+            self, "Select File", "", "Excel Files (*.xlsx)", options=options
+        )
         if file_name:
             self.line_edit.setText(file_name)
 

@@ -1,9 +1,9 @@
 import copy
 import logging
 
+import pandas as pd
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QMessageBox, QPushButton
-import pandas as pd
 
 from controller.utility import WorkerThread, func_log
 from model.data import DataModel
@@ -11,7 +11,6 @@ from view.ui_widget import ProgressBar
 
 
 class ButtonManager:
-
     def __init__(self, parent):
         self.button_data = DataModel("BUTTON")
         self._parent = parent
@@ -36,7 +35,6 @@ class ButtonManager:
 
 
 class DataManager:
-
     def __init__(self, query, info, base_info=None):
         self.query = query
         self.info = info
@@ -93,8 +91,12 @@ class DataManager:
         """
         if self.query.is_repeat_type():
             # key : loop_data.mode_name.step ex) loop_data.TEST_MODE_ADC.VCD2WGL
-            new_key = "loop_data." + self._input_widgets[0].get_value(
-            ) + "." + self._input_widgets[1].get_value()
+            new_key = (
+                "loop_data."
+                + self._input_widgets[0].get_value()
+                + "."
+                + self._input_widgets[1].get_value()
+            )
             for idx in range(2, self.widget_number):
                 self.info.set_data(
                     new_key + "." + self._input_varname[idx],
@@ -105,7 +107,9 @@ class DataManager:
             return breakable
         else:
             for idx in range(self.widget_number):
-                self.info.set_data(self._input_varname[idx], self._input_widgets[idx].get_value())
+                self.info.set_data(
+                    self._input_varname[idx], self._input_widgets[idx].get_value()
+                )
 
     def restore_info(self):
         self.info = copy.deepcopy(self.pre_info)
@@ -121,7 +125,6 @@ class DataManager:
 
 
 class NavigatorManager:
-
     def __init__(self, pre_window=None):
         self.pre_window = pre_window
         self.next_window = None
@@ -144,7 +147,6 @@ class NavigatorManager:
 
 
 class ExecuteManager:
-
     def __init__(self, func, parent):
         self.func = func
         self._parent = parent
@@ -155,7 +157,7 @@ class ExecuteManager:
         self.dataframe_extractor.extract_dataframe()
         kwargs["dataframe_list"] = self.dataframe_extractor.dataframe_list
         self.kwargs = kwargs
-        self.worker_thread = WorkerThread(self.func, *args, **kwargs)
+        self.worker_thread = WorkerThread(self.func, *args, **self.kwargs)
         self.worker_thread.finished.connect(self._handle_result)
         self.worker_thread.updated.connect(self._udpate_progress)
         self.worker_thread.start()
@@ -171,7 +173,7 @@ class ExecuteManager:
         else:
             self._show_msgbox("Fail!")
         self._run_callback()
-    
+
     def _run_callback(self):
         if "callback" in self.kwargs:
             self.kwargs["callback"]()
@@ -189,7 +191,7 @@ class DataframeExtractor:
     def __init__(self, user_input):
         self.user_input = user_input
         self.dataframe_list = list()
-    
+
     def extract_dataframe(self):
         """
         To avoid unexpected Gui close, extract dataframe in mainthread

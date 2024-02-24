@@ -81,6 +81,7 @@ def construct_b_query(base_info):
 
 def make_register_query():
     query_data = DataModel("QUERY")
+    query_data.set_data(f"logo", "sfr_logo.png")
     query_data.set_data(f"base_function", make_base_info)
     query_data.set_data(f"base_query", construct_base_query())
     query_data.set_data(f"{JOB_A}.query_func", construct_a_query)
