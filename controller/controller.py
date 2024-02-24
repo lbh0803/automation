@@ -5,7 +5,7 @@ import pandas as pd
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QMessageBox, QPushButton
 
-from controller.utility import WorkerThread, func_log
+from controller.utility import WorkerThread
 from model.data import DataModel
 from view.ui_widget import ProgressBar
 

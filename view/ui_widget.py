@@ -1,6 +1,4 @@
-import logging
 import threading
-from abc import abstractmethod
 
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QFont

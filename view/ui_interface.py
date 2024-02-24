@@ -1,7 +1,5 @@
-import logging
 from abc import abstractmethod
 
-import pandas as pd
 from PyQt5.QtCore import QCoreApplication, Qt
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import (
