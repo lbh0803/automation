@@ -1,6 +1,5 @@
-import threading
-
-from PyQt5.QtCore import QCoreApplication
+import logging
+from PyQt5.QtCore import QCoreApplication, QMutex
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QCheckBox,
@@ -22,7 +21,7 @@ class ProgressBar(QWidget):
         super().__init__(parent)
 
         self.value = 0
-        self._lock = threading.Lock()
+        self.mutex = QMutex()
 
         self.progressbar = QProgressBar(self)
         self.progressbar.setMaximum(100)
@@ -38,12 +37,18 @@ class ProgressBar(QWidget):
 
         self.setFixedSize(300, 100)
 
-    def update_progress(self, add_value):
-        with self._lock:
+    def update_progress(self, value):
+        self.mutex.lock()
+        try:
             # logging.info("Entered to the critical section")
-            self.value += add_value
+            self.value = value
             self.progressbar.setValue(self.value // 100 + 1)
-
+        except Exception as e:
+            logging.error(f"Error while updating progressbar : {e}")
+            raise
+        finally:
+            self.mutex.unlock()
+        
     def center(self):
         qr = self.frameGeometry()
         cp = QCoreApplication.instance().primaryScreen().availableGeometry().center()

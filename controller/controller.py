@@ -136,7 +136,6 @@ class NavigatorManager:
             self.pre_window.data_manager.restore_info()
         except Exception:
             logging.info("Previous window is job select window")
-            pass
         self.pre_window.show()
 
     def show_next_window(self, BaseInputWindow, *args, **kwargs):
@@ -219,3 +218,4 @@ class DataframeExtractor:
                 self.dataframe_list.append(dataframe)
         except Exception as e:
             logging.error(f"Error while converting excel data to dataframe : {e}")
+            raise

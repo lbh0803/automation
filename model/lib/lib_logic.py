@@ -15,14 +15,14 @@ from model.data import DataModel
 @func_log
 def make_base_info(*args, **kwargs):
     callback = kwargs.get("callback", None)
-    for _ in range(100):
-        callback(100)
+    for i in range(1, 101):
+        callback(100 * i)
         time.sleep(0.05)
 
 
 @func_log
 def make_lib_status_info(*args, **kwargs):
     callback = kwargs.get("callback", None)
-    for _ in range(100):
-        callback(100)
+    for i in range(1, 101):
+        callback(100 * i)
         time.sleep(0.05)

@@ -58,6 +58,14 @@ def monitor_thread(thread, callback, val):
     logging.info(f"thread : {thread.name} is finished")
 
 
+def q_monitor_thread(q, callback, full_cnt):
+    while True:
+        current_cnt = q.qsize()
+        callback(10000 * current_cnt / full_cnt)
+        if current_cnt == full_cnt:
+            break
+
+
 def func_log(func):
     """
     This is decorator for logging function informations.
