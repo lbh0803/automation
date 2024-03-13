@@ -5,11 +5,14 @@ import time
 import numpy as np
 import pandas as pd
 from flask import Flask, after_this_request, render_template, send_file
+from memory_profiler import profile
+
 
 EXCEL_FILE = r"C:\Users\82108\Desktop\pandas.xlsx"
 app = Flask(__name__)
 
 
+@profile
 def extract_df():
     dfs = pd.read_excel(EXCEL_FILE, sheet_name=None, header=None)
     for sheet_name, df in dfs.items():
@@ -17,6 +20,7 @@ def extract_df():
     return dfs
 
 
+@profile
 def update_df(df):
     df.fillna(np.nan, inplace=True)
     r_idx = (df.notna()).any(axis=1).idxmax()
@@ -29,12 +33,14 @@ def update_df(df):
 dfs = extract_df()
 
 
+@profile
 @app.route("/")
 def display_home():
     sheet_names = list(dfs.keys())
     return render_template("home.html", sheet_names=sheet_names)
 
 
+@profile
 @app.route("/display/<sheet_name>")
 def display_sheet(sheet_name):
     df = dfs.get(sheet_name, pd.DataFrame())
@@ -48,6 +54,7 @@ def display_sheet(sheet_name):
     )
 
 
+@profile
 @app.route("/download/<sheet_name>")
 def download_sheet(sheet_name):
     df = dfs.get(sheet_name, pd.DataFrame())
@@ -64,6 +71,7 @@ def download_sheet(sheet_name):
     return response
 
 
+@profile
 @app.route("/download/all")
 def download_all_sheets():
     with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp_file:

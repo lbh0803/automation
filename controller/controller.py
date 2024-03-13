@@ -1,5 +1,7 @@
 import copy
+import gc
 import logging
+import tracemalloc
 
 import pandas as pd
 from PyQt5.QtGui import QFont
@@ -128,6 +130,7 @@ class NavigatorManager:
     def __init__(self, pre_window=None):
         self.pre_window = pre_window
         self.next_window = None
+        self._next_visited = False
 
     def show_pre_window(self):
         self.pre_window.data_manager.query.down_cnt()
@@ -139,14 +142,20 @@ class NavigatorManager:
         self.pre_window.show()
 
     def show_next_window(self, BaseInputWindow, *args, **kwargs):
-        if not self.next_window:
+        if not self._check_visit_status():
             self.next_window = BaseInputWindow(*args, **kwargs)
+            self.update_visit_status(True)
         else:
             self.next_window.show()
 
     def go_home_window(self, BaseInputWindow, *args, **kwargs):
         self.home_window = BaseInputWindow(*args, **kwargs)
 
+    def update_visit_status(self, value):
+        self._next_visited = value
+
+    def _check_visit_status(self):
+        return self._next_visited
 
 class ExecuteManager:
     def __init__(self, func, parent):
@@ -154,6 +163,8 @@ class ExecuteManager:
         self._parent = parent
 
     def execute_function(self, *args, **kwargs):
+        # gc.disable()
+        # self.snapshot1 = tracemalloc.take_snapshot()
         user_input = kwargs.get("user_input", None)
         self.dataframe_extractor = DataframeExtractor(user_input)
         self.dataframe_extractor.extract_dataframe()
@@ -175,10 +186,19 @@ class ExecuteManager:
         else:
             self._show_msgbox("Fail!")
         self._run_callback()
+        self.worker_thread.finished.disconnect()
+        self.worker_thread.updated.disconnect()
+        self.worker_thread.deleteLater()
+        self.worker_thread = None
 
     def _run_callback(self):
         if "callback" in self.kwargs:
             self.kwargs["callback"]()
+        # self.snapshot2 = tracemalloc.take_snapshot()
+        # top_stats = self.snapshot2.compare_to(self.snapshot1, "lineno")
+        # for stat in top_stats[:10]:
+            # print(stat)
+        # gc.enable()
 
     def _show_msgbox(self, text):
         self.msg = QMessageBox(self._parent)

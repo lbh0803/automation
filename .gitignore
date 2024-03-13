@@ -1,6 +1,6 @@
-.pytest_cache
+**/.pytest_cache
 **/__pycache__
 **/*.db
-.venv
-.gitignore
-reference*
+**/.venv
+**/reference*
+**/mprofile*

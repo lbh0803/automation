@@ -8,13 +8,14 @@ from controller.controller import (
 )
 from model.data import DataModel
 from view.ui_interface import BaseInputWindow
-
+from memory_profiler import profile
 
 class JobSelectWindow(BaseInputWindow):
     """
     You can select which job to be executed.
     """
 
+    @profile
     def __init__(self, query, info, logo, query_init, info_init, func=None):
         self.logo = logo
         self.query_init = query_init
@@ -70,7 +71,7 @@ class JobSelectWindow(BaseInputWindow):
             info_init=self.info_init,
             func=self.next_func,
         )
-        self.navi_manager.next_window = None
+        self.navi_manager.update_visit_status(False)
         self.hide()
 
     def execute_function(self):
@@ -104,7 +105,7 @@ class JobSelectWindow(BaseInputWindow):
             pre_window=self,
             func=self.next_func,
         )
-        self.navi_manager.next_window = None
+        self.navi_manager.update_visit_status(False)
         self.hide()
 
     def go_home(self):
@@ -127,7 +128,7 @@ class InputWindow(BaseInputWindow):
     This is main input window
     You can put detailed data that would be used to execute your job.
     """
-
+    @profile
     def __init__(
         self,
         query,
